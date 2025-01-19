@@ -1,10 +1,15 @@
-
+import '../../Home.css'
 import { motion } from "framer-motion";
 
 const BrandSlide = () => {
   return (
     <div className="pt-8 bg-white px-4 md:p-12 flex justify-center">
-      <div className="overflow-hidden [mask-img:linear-gradient(to_right,transparent,black,transparent)] w-[1200px]">
+      <div className="overflow-hidden [mask-img:linear-gradient(to_right,transparent,black,transparent)]  w-[1200px]"
+       style={{
+        maskImage: "linear-gradient(to right, transparent, black, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black, transparent)",
+      }}
+      >
         <motion.div
           className="flex gap-14 flex-none items-center justify-center pr-14"
           animate={{

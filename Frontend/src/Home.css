@@ -3,3 +3,10 @@
 body {
   font-family: 'DM Sans', sans-serif;
 }
+.text-mask {
+    font-size: 40px;
+    font-weight: bold;
+    background-image: linear-gradient(to right, transparent, black, transparent);
+    -webkit-background-clip: text;
+    color: transparent;
+  }
