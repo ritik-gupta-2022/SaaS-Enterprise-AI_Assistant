@@ -7,30 +7,26 @@ import authRoutes from './routes/auth.routes.js';
 import businessRoutes from './routes/business.route.js'
 // This line loads environment variables from the .env file into process.env
 dotenv.config()
-
+const app = express();
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Frontend URL
+    credentials: true, // Allow cookies
+}));
+app.use(express.json());
+app.use(cookieParser());
 
 // mongo url
 mongoose.connect(process.env.MONGO)
 .then(()=>console.log("mongoDB connected"))
 .catch((err)=>console.log(err))
 
-const app = express();
 
-app.listen(3000,()=>{
-    console.log("server connected at port 3000");
-});
-const corsOptions = {
-};
 
-app.use(cors());
 
-app.options('*', cors()); 
 
-// app.use(cors());
-// for converting json data to object sent by server
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
 
@@ -51,3 +47,6 @@ app.use((err, req, res, next)=>{
         message
     })
 })
+app.listen(3000,()=>{
+    console.log("server connected at port 3000");
+});
