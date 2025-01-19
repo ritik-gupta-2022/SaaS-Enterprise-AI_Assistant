@@ -4,6 +4,7 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
+  console.log(req.body);
   const { name, email, password } = req.body;
 
   if (
@@ -28,29 +29,27 @@ export const signup = async (req, res, next) => {
     // console.log(newUser);
     await newUser.save();
     
-    console.log(newUser);
+    // console.log(newUser);
 
     const token = jwt.sign(
       { id: newUser._id, isAdmin: newUser.isAdmin },
       process.env.JWT_SECRET_KEY
     );
+    // console.log(token);
     const { password: pass, ...rest } = newUser._doc;
+    
     res
-      .status(201)
-      .cookie("access_token", token, {
-        // httpOnly: true,//to prevent access from javascript(commented to access in frontend)
-        path: "/",
-        sameSite: "None",
-        // httpOnly: true,//to prevent access from javascript(commented to access in frontend)
-        httpOnly: true,
-        secure: true, // Enable secure only in production
-        path: "/",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .json({ message: "Signup successful", user: rest });
+  .status(200)
+  .cookie("access_token", token, {
+    httpOnly: true, // Prevent client-side access
+    secure: false, // Only true if using HTTPS
+    sameSite: "Lax", // Or "None" with secure: true
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  })
+  .json({ message: "Signup successful", user: rest });
   } catch (error) {
     // console.log(error);
-    next(error);
+    next(errorHandler(500, "Internal server error"));
   }
 };
 
@@ -82,14 +81,10 @@ export const signin = async (req, res, next) => {
     res
       .status(200)
       .cookie("access_token", token, {
-        // httpOnly: true,//to prevent access from javascript(commented to access in frontend)
-        path: "/",
-        sameSite: "None",
-        // httpOnly: true,//to prevent access from javascript(commented to access in frontend)
-        //   httpOnly: true,
-        //   secure:true, // Enable secure only in production
-        //   path: '/',
-        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true, // Prevent client-side access
+        secure: false, // Only true if using HTTPS
+        sameSite: "Lax", // Or "None" with secure: true
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .json(rest);
   } catch (error) {

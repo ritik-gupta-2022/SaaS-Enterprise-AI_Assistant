@@ -19,8 +19,8 @@ export function Sidebar({ onNavigation, active }) {
         colors: {
             expanded: 'bg-[#f5f5f5]',
             collapsed: 'bg-[#f5f5f5]',
-            hover: 'hover:bg-[#FFA947]',
-            activeItem: 'bg-[#FFA947]',
+            hover: 'hover:bg-[#7E75B8]',
+            activeItem: 'bg-[#7E75B8]',
         },
         sizes: {
             expanded: 'w-60',
@@ -34,7 +34,7 @@ export function Sidebar({ onNavigation, active }) {
         <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} min-h-screen text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
             <button 
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="absolute -right-3 top-4 bg-[#FFA947] text-black rounded-full p-1 hover:bg-bg-[#FFA947]"
+                className="absolute -right-3 top-4 bg-[#7E75B8] text-black rounded-full p-1 hover:bg-bg-[#7E75B8]"
             >
                 {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
