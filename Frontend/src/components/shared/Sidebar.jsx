@@ -2,6 +2,7 @@
 // Modified Sidebar.jsx
 import { LayoutGrid, MessageCircle, Settings, Calendar, Mail, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import SparklesText from '../ui/sparkles-text'
 // import { SidebarConfig } from './SidebarConfig'
 
 const navItems = [
@@ -19,8 +20,8 @@ export function Sidebar({ onNavigation, active }) {
         colors: {
             expanded: 'bg-[#f5f5f5]',
             collapsed: 'bg-[#f5f5f5]',
-            hover: 'hover:bg-[#7E75B8]',
-            activeItem: 'bg-[#7E75B8]',
+            hover: 'hover:bg-[#c0bbe5]',
+            activeItem: 'bg-[#c0bbe5]',
         },
         sizes: {
             expanded: 'w-60',
@@ -34,14 +35,14 @@ export function Sidebar({ onNavigation, active }) {
         <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} min-h-screen text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
             <button 
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="absolute -right-3 top-4 bg-[#7E75B8] text-black rounded-full p-1 hover:bg-bg-[#7E75B8]"
+                className="absolute -right-3 top-4 bg-[#c0bbe5] text-black rounded-full p-1 hover:bg-bg-[#7E75B8]"
             >
                 {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
 
             <div className={`flex items-center gap-2 mb-8 px-2 ${isCollapsed ? 'justify-center' : ''}`}>
-                <div className="w-8 h-8 bg-primary rounded-lg" />
-                {!isCollapsed && <span className="font-semibold text-black text-lg">BizBot</span>}
+            <img src={'/assests/logo.png'} width={'35px'} alt="Logo" className="cursor-pointer" />
+                {!isCollapsed && <SparklesText text="BizBot" />}
             </div>
 
             <nav className="space-y-1">

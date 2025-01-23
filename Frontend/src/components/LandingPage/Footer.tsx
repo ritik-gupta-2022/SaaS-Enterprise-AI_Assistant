@@ -14,10 +14,14 @@ const Footer = () => {
       <div className="flex flex-col gap-8 text-gray-300/85 max-w-[300px]">
         <img src={'/assests/logo.png'} width={'41px'} alt="Logo" className="cursor-pointer" />
         <div>
-          This website is developed by{" "}
+          This product is owned & developed by{" "}
           <div className="font-semibold text-white hover:underline text-lg">
-            <a href="https://github.com/sushantkrsky">
-              Sushant Kumar <MdOutlineArrowOutward className="inline" />
+            <a href="https://github.com/ritik-gupta-2022">
+              Ritik Gupta <MdOutlineArrowOutward className="inline" />
+            </a>
+            <br />
+            <a href="https://github.com/sarans-h">
+              Saransh Gupta <MdOutlineArrowOutward className="inline" />
             </a>
           </div>
         </div>
