@@ -10,7 +10,11 @@ const businessSchema = new mongoose.Schema(
     filterQuestions: [{ type: mongoose.Schema.Types.ObjectId, ref: "FilterQuestions" }],
     customer: [{ type: mongoose.Schema.Types.ObjectId, ref: "Customer" }],
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    campaignId: { type: mongoose.Schema.Types.ObjectId, ref: "Campaign" },
+    campaign: [{ type: mongoose.Schema.Types.ObjectId, ref: "Campaign" }],
+    product: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    appointmentUrl : {type:String},
+    description :{type:String,required:true},
+    contactNo:{type:Number,required:true},
   },
   { timestamps: true }
 );

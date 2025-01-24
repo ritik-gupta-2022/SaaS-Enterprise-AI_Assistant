@@ -6,6 +6,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home.jsx';
 import OnlyUserPrivateRoute from './components/shared/OnlyUserPrivateRoute.jsx';
+import Chatbot from './components/shared/Chatbot';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path='/signin' element={<SignIn/>} />
           <Route path='/signup' element={<SignUp/>} />
+          <Route path='/chatbot' element={<Chatbot/>} />
           
           <Route path='' element={<OnlyUserPrivateRoute/>}>
             <Route path='/dashboard' element={<Dashboard/>} />

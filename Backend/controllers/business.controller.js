@@ -7,7 +7,7 @@ import { createChatbot } from "./chatbot.controller.js";
 export const addBusiness = async (req,res,next) =>{
     const userId = req.user.id;
 
-    const {name, businessUrl} = req.body;
+    const {name, businessUrl, appointmentUrl,  description, contactNo} = req.body;
 
     if(!userId){
         return next(errorHandler(401, "Unauthorized: You are not allowed to register a business"));
@@ -24,7 +24,7 @@ export const addBusiness = async (req,res,next) =>{
             return next(errorHandler(403, "Insufficient credit"));
         }
         
-        const business = new Business({ userId,name, businessUrl});
+        const business = new Business({ userId ,name, businessUrl, description, contactNo, appointmentUrl});
         await business.save();
 
         user.businesses.push(business._id);
