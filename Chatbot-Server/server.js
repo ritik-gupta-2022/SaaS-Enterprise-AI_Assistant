@@ -11,7 +11,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:5173",
+    // origin: "https://ai-test-chat.vercel.app",
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -20,16 +21,20 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-// mongoose.connect(process.env.MONGO, {
-//   useNewUrlParser: true, 
-//   useUnifiedTopology: true,
-//   ssl: true,
-//   tlsInsecure: true // Only if you're having SSL certificate issues
-// });
-
 mongoose.connect(process.env.MONGO)
 .then(()=>console.log("mongoDB connected"))
 .catch((err)=>console.log(err))
+
+app.get('/customers', async (req, res) => {
+  const session = await Session.find();
+  if(session){
+    res.status(200).send(session);
+  }
+  else {
+    res.status(500).send('Failed to fetch customer sessions');
+  }
+});
+
 
 // Temporary storage for anonymous chats
 const tempChats = new Map();
@@ -37,6 +42,7 @@ const tempChats = new Map();
 // Create a schema for user sessions
 const sessionSchema = new mongoose.Schema({
   email: { type: String, unique: true },
+  roomId: String,
   chatHistory: [{
     role: String,
     content: String,
@@ -81,6 +87,8 @@ Always respond in a tone and style suitable for this business. Your goal is to h
 
 Progress the conversation naturally, asking relevant questions to gather information. Use the following custom questions when appropriate:
 ${businessInfo.customQuestions.map((q, i) => `${i + 1}. ${q}`).join('\n')}
+
+
 
 When you ask an important question that's crucial for lead generation (including the custom questions above), add the keyword ⚡complete⚡ at the end of the question. This is extremely important.
 
@@ -160,6 +168,8 @@ async function handleChat(sessionId, message) {
     } else {
       session.email = email;
     }
+    // Assign a room only if user now has an email
+    session.roomId = `${sessionId}`;
     activeChats.set(sessionId, session);
   }
 
@@ -211,6 +221,7 @@ Instructions:
         { email: session.email },
         { 
           email: session.email,
+          roomId: session.roomId, 
           chatHistory: session.chatHistory 
         },
         { upsert: true }
@@ -284,9 +295,45 @@ const TAG_SYMBOL = '⚡';
 io.on('connection', (socket) => {
   const sessionId = socket.id;
   console.log('New connection:', sessionId);
-  
+
+  // Create a room
+  const roomId = `${sessionId}`;
+
+  // Check if session exists
+  let session = activeChats.get(sessionId);
+  if (!session) {
+    session = { email: null, chatHistory: [], roomId };
+    activeChats.set(sessionId, session);
+  } else {
+    session.roomId = roomId;
+  }
+
+  // Join the new room
+  socket.join(roomId);
+
   // Send greeting immediately on connection
   sendGreeting(socket, sessionId);
+
+  socket.on('checkRoomStatus', (roomId, callback) => {
+    const isActive = io.sockets.adapter.rooms.has(roomId);
+    callback({ isActive });
+  });
+
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+  });
+
+  socket.on('adminMessage', ({ roomId, message }) => {
+    io.to(roomId).emit(EVENT_TYPES.RESPONSE, {
+      message,
+      sessionInfo: {
+        hasEmail: true,
+        email: 'admin@example.com',
+        messageCount: 0,
+        type: MESSAGE_ROLES.ASSISTANT
+      }
+    });
+  });
 
   socket.on('message', async (messageText) => {
     try {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+
 const socket = io('http://localhost:5000');
 
 const MESSAGE_TYPES = {
@@ -16,7 +17,7 @@ const EVENT_TYPES = {
   ERROR: 'error'
 };
 
-function Chatbot() {
+function Chat() {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [sessionInfo, setSessionInfo] = useState({ hasEmail: false, messageCount: 0 });
@@ -36,7 +37,7 @@ function Chatbot() {
       }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.ASSISTANT, 
-        content: message, 
+        content: message,
         isVerified: sessionInfo?.hasEmail,
         tags: sessionInfo?.tags || []
       }]);
@@ -57,7 +58,7 @@ function Chatbot() {
           isVerified: sessionInfo.hasEmail,
           tags: sessionInfo?.tags || []
         }
-      ]); 
+      ]);
     });
 
     socket.on(EVENT_TYPES.APPOINTMENT, ({ message, link, sessionInfo }) => {
@@ -112,45 +113,33 @@ function Chatbot() {
   };
 
   return (
-    <div className="text-center font-sans">
-      <header className="bg-gray-800 text-white p-4">
-        <h1 className="text-2xl font-bold">TechGadget Store AI Chatbot</h1>
+    <div className="flex flex-col items-center min-h-screen bg-gray-100">
+      <header className="w-full bg-blue-600 text-white py-4 text-center">
+        <h1 className="text-xl font-bold">TechGadget Store AI Chatbot</h1>
         {sessionInfo.hasEmail && (
-          <div className="mt-2 text-sm text-gray-300">
-            Verified User {sessionInfo.email}
-          </div>
+          <div className="mt-2 text-sm">Verified User {sessionInfo.email}</div>
         )}
       </header>
-      <div className="max-w-2xl mx-auto p-4">
-        <div className="h-96 overflow-y-auto border border-gray-300 p-4 rounded mb-4">
+      <div className="flex flex-col w-full max-w-xl bg-white shadow-lg rounded-lg p-4 mt-6">
+        <div className="flex flex-col h-96 overflow-y-auto border border-gray-300 p-2 rounded-md">
           {!isConnected ? (
-            <div className="bg-red-100 text-red-700 p-2 rounded">
-              Connecting to chat...
-            </div>
+            <div className="text-center text-gray-500">Connecting to chat...</div>
           ) : (
             messages.map((message, index) => (
               <div 
                 key={index} 
-                className={`p-2 rounded mb-2 ${
-                  message.type === MESSAGE_TYPES.USER
-                    ? 'bg-blue-100 text-right'
-                    : message.type === MESSAGE_TYPES.ASSISTANT
-                    ? 'bg-gray-100 text-left'
-                    : message.type === MESSAGE_TYPES.SYSTEM
-                    ? 'bg-red-50 text-center'
-                    : 'bg-red-200 text-red-800 text-center'
+                className={`p-2 mb-2 rounded-md text-sm ${
+                  message.type === MESSAGE_TYPES.USER ? 'bg-blue-100 text-right' : 
+                  message.type === MESSAGE_TYPES.ASSISTANT ? 'bg-gray-100 text-left' : 
+                  message.type === MESSAGE_TYPES.SYSTEM ? 'bg-yellow-100 text-center' : 
+                  'bg-red-100 text-red-600 text-center'
                 }`}
               >
                 {message.content}
                 {message.tags?.length > 0 && (
-                  <div className="mt-2 text-sm flex flex-wrap gap-2">
+                  <div className="mt-1 flex flex-wrap gap-1">
                     {message.tags.map((tag, i) => (
-                      <span 
-                        key={i} 
-                        className="inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded text-xs"
-                      >
-                        {tag}
-                      </span>
+                      <span key={i} className="px-2 py-1 bg-gray-200 text-xs rounded-md">{tag}</span>
                     ))}
                   </div>
                 )}
@@ -159,17 +148,17 @@ function Chatbot() {
           )}
           <div ref={messagesEndRef} />
         </div>
-        <form onSubmit={handleSubmit} className="flex items-center">
+        <form onSubmit={handleSubmit} className="flex mt-4">
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder={sessionInfo.hasEmail ? "Type your message..." : "Type your message or provide email..."}
-            className="flex-grow p-2 border border-gray-300 rounded-l text-gray-700"
+            className="flex-grow border border-gray-300 rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button 
-            type="submit" 
-            className="p-2 bg-green-500 text-white rounded-r hover:bg-green-600"
+            type="submit"
+            className="bg-blue-600 text-white px-4 py-2 rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Send
           </button>
@@ -179,4 +168,4 @@ function Chatbot() {
   );
 }
 
-export default Chatbot;
+export default Chat;
