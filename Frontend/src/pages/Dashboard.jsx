@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Sidebar } from '../components/shared/Sidebar'
 import { DashboardOverview } from '../components/dashboard/Overview'
+import AddBusiness from '../components/AddBusiness/AddBusiness'
 
 
 function Dashboard() {
@@ -18,6 +19,8 @@ function Dashboard() {
         return <h2 className="text-2xl font-bold">Appointments</h2>
       case 'email':
         return <h2 className="text-2xl font-bold">Email Marketing</h2>
+      case 'add-business':
+        return <AddBusiness/>
       default:
         return <h2 className="text-2xl font-bold">Dashboard Overview</h2>
     }
@@ -26,7 +29,7 @@ function Dashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar onNavigation={setActiveSection} active={activeSection} />
-      <main className="flex-1 p-8">
+      <main className="flex-1">
         {renderContent()}
       </main>
     </div>

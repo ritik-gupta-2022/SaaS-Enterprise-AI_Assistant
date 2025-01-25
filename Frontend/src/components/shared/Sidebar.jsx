@@ -1,6 +1,6 @@
 
 // Modified Sidebar.jsx
-import { LayoutGrid, MessageCircle, Settings, Calendar, Mail, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutGrid, Plus, MessageCircle, Settings, Calendar, Mail, LogOut, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import SparklesText from '../ui/sparkles-text'
 // import { SidebarConfig } from './SidebarConfig'
@@ -11,6 +11,7 @@ const navItems = [
     { icon: Settings, label: 'Settings', id: 'settings' },
     { icon: Calendar, label: 'Appointments', id: 'appointments' },
     { icon: Mail, label: 'Email Marketing', id: 'email' },
+    { icon: Plus, label: 'Add Business', id: 'add-business' },
 ]
 
 export function Sidebar({ onNavigation, active }) {
@@ -56,14 +57,21 @@ export function Sidebar({ onNavigation, active }) {
                         {!isCollapsed && <span>{item.label}</span>}
                     </button>
                 ))}
+               
             </nav>
 
-            <div className={`relative -bottom-80 text-black mt-3 border-t border-gray-800 ${!isCollapsed&&"top-72"}`}>
-                <button className={`flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
-                    <LogOut className="w-5 h-5" />
-                    {!isCollapsed && <span>Sign out</span>}
-                </button>
-            </div>
+
+            <div className={`text-black mt-3 border-t border-gray-800 absolute bottom-4 left-2 right-2 px-4`}>
+    <button className={`mt-2 mb-0 flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
+        <LogOut className="w-5 h-5" />
+        {!isCollapsed && <span>Sign out</span>}
+    </button>
+</div>
+
         </div>
     )
 }
+
+
+
+// Add this to your imports at the top
