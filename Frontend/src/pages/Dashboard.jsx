@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Sidebar } from '../components/shared/Sidebar'
 import { DashboardOverview } from '../components/dashboard/Overview'
 import AddBusiness from '../components/AddBusiness/AddBusiness'
+import Conversation from './Conversation'
 
 
 function Dashboard() {
@@ -12,7 +13,7 @@ function Dashboard() {
       case 'overview':
         return <DashboardOverview/>
       case 'conversations':
-        return <h2 className="text-2xl font-bold">Conversations</h2>
+        return <Conversation/>
       case 'settings':
         return <h2 className="text-2xl font-bold">Settings</h2>
       case 'appointments':

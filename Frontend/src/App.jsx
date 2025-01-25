@@ -22,7 +22,6 @@ function App() {
           <Route path='/signup' element={<SignUp/>} />
           <Route path='/chatbot' element={<Chatbot/>} />
           <Route path='/appointment' element={<Appointment/>} />
-          <Route path='/conversation' element={<Conversation/>} />
 
           
           <Route path='' element={<OnlyUserPrivateRoute/>}>
