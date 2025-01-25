@@ -53,8 +53,8 @@ export function Calendar({ selectedDate, onSelect }) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 w-[100%]">
+      {/* <div className="flex justify-between items-center">
         <Button variant="outline" size="icon" onClick={handlePreviousMonth} disabled={isPreviousMonthDisabled()}>
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">Previous month</span>
@@ -64,7 +64,7 @@ export function Calendar({ selectedDate, onSelect }) {
           <ChevronRight className="h-4 w-4" />
           <span className="sr-only">Next month</span>
         </Button>
-      </div>
+      </div> */}
       <CalendarComponent
         mode="single"
         selected={selectedDate}

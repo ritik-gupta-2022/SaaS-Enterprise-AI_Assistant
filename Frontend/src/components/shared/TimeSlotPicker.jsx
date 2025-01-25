@@ -27,7 +27,7 @@ export function TimeSlotPicker({ date, selectedTimeSlot, onSelect }) {
             ${
               selectedTimeSlot === slot
                 ? "bg-[#c0bbe5] text-white hover:bg-[#a9a3d9]"
-                : "text-[#c0bbe5] border-[#c0bbe5] hover:bg-[#c0bbe5] hover:text-white"
+                : "text-black border-[#c0bbe5] hover:bg-[#c0bbe5] hover:text-white"
             }
             transition-colors duration-200
           `}

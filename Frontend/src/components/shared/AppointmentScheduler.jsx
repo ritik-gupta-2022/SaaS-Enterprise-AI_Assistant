@@ -36,12 +36,10 @@ export function AppointmentScheduler() {
 
   return (
     <Card className="w-full max-w-5xl mx-auto shadow-lg">
-      <CardHeader className="bg-[#c0bbe5] text-white">
-        <CardTitle className="text-2xl">Schedule Your Appointment</CardTitle>
-      </CardHeader>
+      
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1">
+          <div className="">
             <Calendar selectedDate={selectedDate} onSelect={handleDateSelect} />
           </div>
           <div className="flex-1">
