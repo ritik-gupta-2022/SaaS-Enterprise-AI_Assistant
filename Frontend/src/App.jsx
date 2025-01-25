@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Home from './pages/Home.jsx';
 import OnlyUserPrivateRoute from './components/shared/OnlyUserPrivateRoute.jsx';
 import Chatbot from './components/shared/Chatbot';
+import Appointment from './pages/Appointment.jsx';
+import Conversation from './pages/Conversation.jsx';
 
 
 function App() {
@@ -19,6 +21,9 @@ function App() {
           <Route path='/signin' element={<SignIn/>} />
           <Route path='/signup' element={<SignUp/>} />
           <Route path='/chatbot' element={<Chatbot/>} />
+          <Route path='/appointment' element={<Appointment/>} />
+          <Route path='/conversation' element={<Conversation/>} />
+
           
           <Route path='' element={<OnlyUserPrivateRoute/>}>
             <Route path='/dashboard' element={<Dashboard/>} />
