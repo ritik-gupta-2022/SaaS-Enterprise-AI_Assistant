@@ -43,7 +43,7 @@ export function Sidebar({ onNavigation, active }) {
 
             <div className={`flex items-center gap-2 mb-8 px-2 ${isCollapsed ? 'justify-center' : ''}`}>
             <img src={'/assests/logo.png'} width={'35px'} alt="Logo" className="cursor-pointer" />
-                {!isCollapsed && <SparklesText text="BizBot" />}
+                {!isCollapsed && <SparklesText text="BizKit" />}
             </div>
 
             <nav className="space-y-1">
