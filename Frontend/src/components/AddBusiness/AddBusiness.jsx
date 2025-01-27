@@ -8,6 +8,11 @@ import { Card, CardContent } from "../ui/card"
 import { Progress } from "../ui/progress"
 
 import { Loader2, SkipForward, ArrowRight, Sparkles } from "lucide-react"
+import { toast } from "react-toastify"
+import { FRONTEND_URL } from "../../constant"
+import { useDispatch } from "react-redux"
+import { addBusinessSucess } from "../../redux/businessSlice"
+import { updateCurrentUser } from "../../redux/userSlice"
 
 const AnimatedText = ({ children, delay = 0 }) => (
   <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay }}>
@@ -38,7 +43,7 @@ const SparkleEffect = () => (
           repeatDelay: Math.random() * 2,
         }}
       >
-        <Sparkles className="text-yellow-400" size={16} />
+        <Sparkles className="text-[#c0bbe5]" size={16} />
       </motion.div>
     ))}
   </motion.div>
@@ -135,20 +140,47 @@ const AddBusiness = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [progress, setProgress] = useState(0)
+  const dispatch = useDispatch();
 
   const questions = [
-      { text: "What's the name of your groundbreaking business?", key: "name", required: true },
-      { text: "Share the url of your business.", key: "businessUrl", required: true },
+    { text: "What's the name of your groundbreaking business?", key: "name", required: true },
+    { text: "Share the url of your business.", key: "businessUrl", required: true },
     { text: "Description of your business?", key: "description", required: true,isTextarea:true},
     { text: "What is the business email?", key: "businessEmail", required: true},
     { text: "What is the business contact number?", key: "contactNo", required: true},
   ]
 
-  const handleNext = () => {
+  const handleSubmit = async()=>{
+    try{
+      const res = await fetch(`${FRONTEND_URL}/api/business/addbusiness`,{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials:'include',
+        body:JSON.stringify(formData)
+      })
+
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        toast.success(`Business Added Successfully`);
+        dispatch(addBusinessSucess(data.business));
+        dispatch(updateCurrentUser(data.user));
+      } else {
+        toast.error(data.message);
+      }
+    }
+    catch(err){
+      console.log(err);
+      toast.error(err.message);
+    }
+  }
+
+  const handleNext = async () => {
 
     if (step === questions.length - 1) {
-      setIsLoading(true)
-      console.log("Collected Form Data:", formData)
+      // setIsLoading(true);
+      console.log("Collected Form Data:", formData);
+      await handleSubmit();
       setTimeout(() => {
         setIsLoading(false)
         setIsSubmitted(true)

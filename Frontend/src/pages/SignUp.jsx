@@ -5,14 +5,24 @@ import { Button } from "../components/ui/button"
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { FRONTEND_URL } from '../constant'
-
 import { ToastContainer, toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux'
+import { signUpFailure, signUpStart, signUpSuccess } from '../redux/userSlice'
 const SignUp = () => {
+  const {loading , error} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = React.useState({ name: '', email: '', password: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.email || !formData.password || !formData.name) {
+      toast.error('Please fill out all fields');
+      return dispatch(signInFailure('Please fill out all fields'));
+    }
+    
     try {
+       dispatch(signUpStart);
       const response = await axios.post(`${FRONTEND_URL}/api/auth/signup`, formData, {
         headers: {
           'Content-Type': 'application/json',
@@ -23,16 +33,20 @@ const SignUp = () => {
   
       if (response.status === 200) {
         toast.success('Signup successful!'); // Add success toast
-        navigate('/'); // Navigate to home page instead of signin
+        dispatch(signUpSuccess(response.data));
+        navigate('/dashboard'); // Navigate to home page instead of signin
+      }
+      else{
+        toast.error(response.message);
+        dispatch(signUpFailure(response.message));
       }
     } catch (error) {
-      
-      // console.log(error.response.data);
+      dispatch(signUpFailure(error.response.data));
+      console.log(error.response.data);
       toast.error('Signup failed. Please try again.'); // Optional: Add error toast
     }
   };
   
-  const navigate=useNavigate();
   return (
     <div className="flex flex-col md:flex-row h-screen">
       <div className="m-auto w-full md:w-[40vw] p-4 border-r-4 border-grey-500">
