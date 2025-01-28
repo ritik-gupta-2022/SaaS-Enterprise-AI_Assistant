@@ -10,7 +10,7 @@ import { Progress } from "../ui/progress"
 import { Loader2, SkipForward, ArrowRight, Sparkles } from "lucide-react"
 import { toast } from "react-toastify"
 import { FRONTEND_URL } from "../../constant"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addBusinessSucess } from "../../redux/businessSlice"
 import { updateCurrentUser } from "../../redux/userSlice"
 
@@ -129,7 +129,8 @@ return (
 }
 
 const AddBusiness = () => {
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(0);
+
   const [formData, setFormData] = useState({
     name: "",
     businessUrl: "",
@@ -137,6 +138,7 @@ const AddBusiness = () => {
     businessEmail: "",
     contactNo: "",
   })
+  const {business,loading,error}=useSelector((state)=>state.business);
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [progress, setProgress] = useState(0)
@@ -160,7 +162,7 @@ const AddBusiness = () => {
       })
 
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       if (res.ok) {
         toast.success(`Business Added Successfully`);
         dispatch(addBusinessSucess(data.business));
@@ -320,6 +322,7 @@ const AddBusiness = () => {
           </AnimatePresence>
         </CardContent>
       </Card>
+      
     </div>
   )
 }

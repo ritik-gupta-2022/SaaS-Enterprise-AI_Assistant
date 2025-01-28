@@ -279,6 +279,7 @@ Instructions:
    - With email: Inform waiting for representative
    - Without email: Ask for email first
 3. Keep conversation natural and professional
+4. Important Do not send any response like "Realtime chat: null"
 `
 
   try {
