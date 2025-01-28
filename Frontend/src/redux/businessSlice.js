@@ -15,9 +15,14 @@ const businessSlice = createSlice({
             state.error=null;
             state.businesses = [...state.businesses, action.payload]
         },
+        getAllBusiness:(state,action)=>{
+            state.loading=false;
+            state.error=null;
+            state.businesses=[action.payload]
+        }
         
     }
 })
 
-export const {addBusinessSucess} = businessSlice.actions;
+export const {addBusinessSucess,getAllBusiness} = businessSlice.actions;
 export default businessSlice.reducer;
