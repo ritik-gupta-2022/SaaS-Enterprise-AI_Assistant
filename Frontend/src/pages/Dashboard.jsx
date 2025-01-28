@@ -1,12 +1,36 @@
-import { useState } from 'react'
+import {  useEffect, useState } from 'react'
 import { Sidebar } from '../components/shared/Sidebar'
 import { DashboardOverview } from '../components/dashboard/Overview'
 import AddBusiness from '../components/AddBusiness/AddBusiness'
 import Conversation from './Conversation'
+import { useDispatch } from 'react-redux'
+import { FRONTEND_URL } from '../constant'
+import { getAllBusiness } from '../redux/businessSlice'
 
 
 function Dashboard() {
+  const dispatch = useDispatch();
   const [activeSection, setActiveSection] = useState('overview')
+  useEffect(() => {
+    const fetchBusinessData = async () => {
+      try {
+        const res = await fetch(`${FRONTEND_URL}/api/business/myBusiness`, {
+          credentials: 'include',
+        });
+        const data = await res.json();
+        console.log(data);
+        if (res.ok) {
+          dispatch(getAllBusiness(data));
+        } else {
+          console.log(data.message);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchBusinessData();
+  }, [])
+  
 
   const renderContent = () => {
     switch (activeSection) {
