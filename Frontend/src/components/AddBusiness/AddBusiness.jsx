@@ -11,7 +11,7 @@ import { Loader2, SkipForward, ArrowRight, Sparkles } from "lucide-react"
 import { toast } from "react-toastify"
 import { FRONTEND_URL } from "../../constant"
 import { useDispatch, useSelector } from "react-redux"
-import { addBusinessSucess } from "../../redux/businessSlice"
+import { addBusiness } from "../../redux/businessSlice"
 import { updateCurrentUser } from "../../redux/userSlice"
 
 const AnimatedText = ({ children, delay = 0 }) => (
@@ -165,7 +165,7 @@ const AddBusiness = () => {
       // console.log(data);
       if (res.ok) {
         toast.success(`Business Added Successfully`);
-        dispatch(addBusinessSucess(data.business));
+        dispatch(addBusiness(data.business));
         dispatch(updateCurrentUser(data.user));
       } else {
         toast.error(data.message);

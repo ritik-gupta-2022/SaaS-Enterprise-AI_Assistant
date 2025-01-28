@@ -71,7 +71,3 @@ export function Sidebar({ onNavigation, active }) {
         </div>
     )
 }
-
-
-
-// Add this to your imports at the top
