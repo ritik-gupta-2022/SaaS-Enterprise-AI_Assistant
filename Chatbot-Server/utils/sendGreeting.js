@@ -1,8 +1,17 @@
 import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model, getSystemPrompt } from "../constants/constants.js"
 
 export async function sendGreeting(socket, sessionId, businessId) {
-  const session = { email: null, chatHistory: [] }
-  activeChats.set(sessionId, session)
+  let session = activeChats.get(sessionId)
+  if (!session) {
+    session = {
+      email: null,
+      chatHistory: [],
+      waitingForRepresentative: false,
+      isWithRepresentative: false,
+      businessId: businessId, // Preserve businessId
+    }
+    activeChats.set(sessionId, session)
+  }
 
   const systemPrompt = await getSystemPrompt(businessId)
   const greetingPrompt = `
@@ -30,10 +39,11 @@ Instructions:
     socket.emit(EVENT_TYPES.RESPONSE, {
       message: greeting,
       sessionInfo: {
-        hasEmail: false,
-        email: null,
-        messageCount: 1,
+        hasEmail: !!session.email,
+        email: session.email,
+        messageCount: session.chatHistory.length,
         type: MESSAGE_ROLES.ASSISTANT,
+        isWithRepresentative: session.isWithRepresentative,
       },
     })
   } catch (error) {

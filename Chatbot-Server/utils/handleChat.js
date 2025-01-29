@@ -4,9 +4,11 @@ import Session from "../models/session.model.js"
 async function handleChat(sessionId, message, isRepresentative = false, isSystemMessage = false, businessId) {
   let session = activeChats.get(sessionId)
   if (!session) {
-    session = { email: null, chatHistory: [], waitingForRepresentative: false, isWithRepresentative: false }
+    session = { email: null, chatHistory: [], waitingForRepresentative: false, isWithRepresentative: false,businessId:businessId }
     activeChats.set(sessionId, session)
   }
+  console.log(session);
+
 
   const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
 
@@ -37,6 +39,7 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
         email: session.email,
         roomId: session.roomId,
         chatHistory: session.chatHistory,
+        businessId: session.businessId, // Added
       },
       { upsert: true },
     )
@@ -153,6 +156,7 @@ Instructions:
           email: session.email,
           roomId: session.roomId,
           chatHistory: session.chatHistory,
+          businessId: session.businessId, // Added
         },
         { upsert: true },
       )

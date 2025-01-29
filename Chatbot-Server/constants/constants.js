@@ -4,8 +4,8 @@ import Business from "../models/business.model.js" // Added import
 dotenv.config()
 
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
-export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
-// export const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
+// export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+export const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
 
 
 export const activeChats = new Map()

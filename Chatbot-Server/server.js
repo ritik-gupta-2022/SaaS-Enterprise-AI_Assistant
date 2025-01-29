@@ -46,7 +46,15 @@ io.on("connection", (socket) => {
 
   let session = activeChats.get(sessionId)
   if (!session) {
-    session = { email: null, chatHistory: [], roomId, waitingForRepresentative: false, isWithRepresentative: false }
+    session = {
+      email: null,
+      chatHistory: [],
+      roomId,
+      waitingForRepresentative: false,
+      isWithRepresentative: false,
+      businessId: businessId, // Added
+    }
+    // console.log(session);
     activeChats.set(sessionId, session)
     handleChat(sessionId, "User has joined the chat." ,false, true, businessId).catch((error) => {
       console.error("Error adding user join message:", error)
@@ -188,7 +196,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const session = activeChats.get(sessionId)
     if (session?.email) {
-      Session.findOneAndUpdate({ email: session.email }, { chatHistory: session.chatHistory }, { upsert: true }).catch(
+      Session.findOneAndUpdate({ email: session.email }, { chatHistory: session.chatHistory,businessId:session.businessId }, { upsert: true }).catch(
         console.error,
       )
       io.to("admin").emit("user-disconnected", {
@@ -226,6 +234,7 @@ async function handleRepresentativeMessage(roomId, message) {
         email: session.email,
         roomId: session.roomId,
         chatHistory: session.chatHistory,
+        businessId: session.businessId
       },
       { upsert: true },
     )
