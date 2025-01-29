@@ -1,4 +1,5 @@
 import { activeChats, MESSAGE_ROLES, model, getSystemPrompt } from "../constants/constants.js"
+import Customer from "../models/customer.model.js"
 import Session from "../models/session.model.js"
 
 async function handleChat(sessionId, message, isRepresentative = false, isSystemMessage = false, businessId) {
@@ -21,6 +22,16 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
       session.chatHistory = existingSession.chatHistory
     } else {
       session.email = email
+
+      const existingCustomer = await Customer.findOne({email});
+      if(!existingCustomer){
+        const customer = new Customer({
+          email,
+          businessId
+        })
+        console.log(customer);
+        await customer.save();
+      }
     }
     session.roomId = `${sessionId}`
     activeChats.set(sessionId, session)

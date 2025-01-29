@@ -72,7 +72,7 @@ export default function Marketing() {
 
   return (
     <div className="min-h-screen bg-[#c0bbe5]/10">
-      <header className="border-b bg-white shadow-sm">
+      <header className="border-b bg-[#f5f5f5] shadow-sm">
         <div className="px-6 py-4 max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-800">Email-Marketing</h1>
           <p className="text-sm text-gray-500">Send bulk emails to your customers</p>
