@@ -4,6 +4,7 @@ import Session from "../models/session.model.js";
 const router = express.Router();
 
 router.get("/customers", async (req, res) => {
+    console.log("hil")
     const session = await Session.find()
     if (session) {
       res.status(200).send(session)

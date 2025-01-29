@@ -27,17 +27,18 @@ const Chat = ({ businessId }) => {
   const [sessionInfo, setSessionInfo] = useState({ hasEmail: false, messageCount: 0 });
   const [isConnected, setIsConnected] = useState(false);
   const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
 
   useEffect(() => {
-    const socketInstance = io('http://localhost:5000', {
+    socketRef.current = io('http://localhost:5000', {
       query: { businessId },
     });
 
-    socketInstance.on('connect', () => {
+    socketRef.current.on('connect', () => {
       setIsConnected(true);
     });
 
-    socketInstance.on(EVENT_TYPES.RESPONSE, (data) => {
+    socketRef.current.on(EVENT_TYPES.RESPONSE, (data) => {
       const { message, sessionInfo } = data;
       setSessionInfo(prevInfo => ({
         ...prevInfo,
@@ -51,7 +52,7 @@ const Chat = ({ businessId }) => {
       }]);
     });
 
-    socketInstance.on(EVENT_TYPES.REALTIME, ({ message, link, sessionInfo }) => {
+    socketRef.current.on(EVENT_TYPES.REALTIME, ({ message, link, sessionInfo }) => {
       setSessionInfo(sessionInfo);
       setMessages(prev => [...prev, 
         { 
@@ -63,7 +64,7 @@ const Chat = ({ businessId }) => {
       ]);
     });
 
-    socketInstance.on(EVENT_TYPES.APPOINTMENT, ({ message, link, sessionInfo }) => {
+    socketRef.current.on(EVENT_TYPES.APPOINTMENT, ({ message, link, sessionInfo }) => {
       setSessionInfo(sessionInfo);
       setMessages(prev => [...prev, 
         { 
@@ -81,14 +82,14 @@ const Chat = ({ businessId }) => {
       ]);
     });
 
-    socketInstance.on(EVENT_TYPES.ERROR, (error) => {
+    socketRef.current.on(EVENT_TYPES.ERROR, (error) => {
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.ERROR, 
         content: error 
       }]);
     });
 
-    socketInstance.on('handover', ({ message, sessionInfo }) => {
+    socketRef.current.on('handover', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.SYSTEM, 
@@ -98,7 +99,7 @@ const Chat = ({ businessId }) => {
       }]);
     });
 
-    socketInstance.on('ai-resume', ({ message, sessionInfo }) => {
+    socketRef.current.on('ai-resume', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.SYSTEM, 
@@ -109,7 +110,7 @@ const Chat = ({ businessId }) => {
     });
 
     // Listen for admin messages
-    socketInstance.on('admin-response', ({ message, sessionInfo }) => {
+    socketRef.current.on('admin-response', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.ADMIN, 
@@ -120,7 +121,7 @@ const Chat = ({ businessId }) => {
     });
 
     // Listen for user messages from admin
-    socketInstance.on('user-message', ({ roomId, message, sessionInfo }) => {
+    socketRef.current.on('user-message', ({ roomId, message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.USER, 
@@ -131,7 +132,7 @@ const Chat = ({ businessId }) => {
     });
 
     // Listen for representative messages
-    socketInstance.on(EVENT_TYPES.REPRESENTATIVE_MESSAGE, ({ message, sessionInfo }) => {
+    socketRef.current.on(EVENT_TYPES.REPRESENTATIVE_MESSAGE, ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       
       // Prevent duplicate representative messages
@@ -150,7 +151,7 @@ const Chat = ({ businessId }) => {
     });
 
     return () => {
-      socketInstance.disconnect();
+      socketRef.current.disconnect();
     };
   }, [businessId]);
 
@@ -161,7 +162,7 @@ const Chat = ({ businessId }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (inputMessage.trim()) {
-      socket.emit('message', inputMessage);
+      socketRef.current.emit('message', inputMessage);
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.USER, 
         content: inputMessage,
