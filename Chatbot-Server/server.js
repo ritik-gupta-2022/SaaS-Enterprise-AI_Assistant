@@ -9,8 +9,9 @@ import axios from "axios"
 import Session from "./models/session.model.js"
 import chatbotRoutes from './routes/chatbot.route.js'
 import handleChat from "./utils/handleChat.js"
-import { activeChats, businessInfo, EVENT_TYPES, MESSAGE_ROLES, model, systemPrompt } from "./constants/constants.js"
+import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model } from "./constants/constants.js"
 import { sendGreeting } from "./utils/sendGreeting.js"
+import Business from "./models/business.model.js" // Added import
 
 dotenv.config()
 
@@ -37,6 +38,8 @@ const TAG_SYMBOL = "⚡"
 
 io.on("connection", (socket) => {
   const sessionId = socket.id
+  const businessId = socket.handshake.query.businessId || null; // Or however you prefer to retrieve it
+
   console.log("New connection:", sessionId)
 
   const roomId = `${sessionId}`
@@ -45,7 +48,7 @@ io.on("connection", (socket) => {
   if (!session) {
     session = { email: null, chatHistory: [], roomId, waitingForRepresentative: false, isWithRepresentative: false }
     activeChats.set(sessionId, session)
-    handleChat(sessionId, "User has joined the chat." ,false, true).catch((error) => {
+    handleChat(sessionId, "User has joined the chat." ,false, true, businessId).catch((error) => {
       console.error("Error adding user join message:", error)
     })
   } else {
@@ -54,7 +57,7 @@ io.on("connection", (socket) => {
 
   socket.join(roomId)
 
-  sendGreeting(socket, sessionId)
+  sendGreeting(socket, sessionId, businessId) // Pass businessId
 
   socket.on("checkRoomStatus", (roomId, callback) => {
     const isActive = io.sockets.adapter.rooms.has(roomId)
@@ -67,7 +70,7 @@ io.on("connection", (socket) => {
 
   socket.on("message", async (messageText) => {
     try {
-      const response = await handleChat(sessionId, messageText)
+      const response = await handleChat(sessionId, messageText, false, false, businessId)
 
       const hasRealtimeTag = response.message.includes(`${TAG_SYMBOL}realtime${TAG_SYMBOL}`)
       const hasAppointmentTag = response.message.includes(`${TAG_SYMBOL}appointment${TAG_SYMBOL}`)
@@ -87,9 +90,12 @@ io.on("connection", (socket) => {
         .replace(new RegExp(`${TAG_SYMBOL}[^${TAG_SYMBOL}]+${TAG_SYMBOL}`, "g"), "")
         .trim()
 
+      const business = businessId ? await Business.findById(businessId) : null
+      const appointmentUrl = business?.appointmentUrl || null
+
       io.to(roomId).emit(eventType, {
         message: cleanMessage,
-        link: eventType === EVENT_TYPES.APPOINTMENT ? businessInfo.appointmentUrl : null,
+        link: eventType === EVENT_TYPES.APPOINTMENT ? appointmentUrl : null,
         sessionInfo: {
           ...response.sessionInfo,
           tags,
@@ -120,7 +126,7 @@ io.on("connection", (socket) => {
 
   socket.on("adminMessage", async ({ roomId, message }) => {
     try {
-      const response = await handleChat(roomId, message, true, true)
+      const response = await handleChat(roomId, message, true, true, businessId)
       io.to(roomId).emit("admin-response", {
         message: response.message,
         sessionInfo: {
@@ -137,7 +143,7 @@ io.on("connection", (socket) => {
   socket.on(EVENT_TYPES.JOIN_AS_REPRESENTATIVE, (roomId) => {
     socket.join(roomId)
     socket.join("admin")
-    handleChat(roomId, "A representative has joined the conversation. ⚡handover⚡",true, true)
+    handleChat(roomId, "A representative has joined the conversation. ⚡handover⚡",true, true, businessId)
       .then((response) => {
         io.to(roomId).emit(EVENT_TYPES.HANDOVER, {
           message: response.message,
@@ -160,7 +166,7 @@ io.on("connection", (socket) => {
     if (session) {
       session.isWithRepresentative = false
       activeChats.set(roomId, session)
-      handleChat(roomId, "The representative has left the conversation. ⚡ai-resume⚡",false, true)
+      handleChat(roomId, "The representative has left the conversation. ⚡ai-resume⚡",false, true, businessId)
         .then((response) => {
           io.to(roomId).emit(EVENT_TYPES.AI_RESUME, {
             message: response.message,

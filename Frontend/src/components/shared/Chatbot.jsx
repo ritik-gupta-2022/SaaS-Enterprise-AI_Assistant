@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { cn } from "@/lib/utils"; // Import cn utility
 
-const socket = io('http://localhost:5000');
-
 const MESSAGE_TYPES = {
   USER: 'user',
   ASSISTANT: 'assistant',
@@ -23,7 +21,7 @@ const EVENT_TYPES = {
   AI_RESUME: 'ai-resume'
 };
 
-const Chat = () => {
+const Chat = ({ businessId }) => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [sessionInfo, setSessionInfo] = useState({ hasEmail: false, messageCount: 0 });
@@ -31,11 +29,15 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    socket.on('connect', () => {
+    const socketInstance = io('http://localhost:5000', {
+      query: { businessId },
+    });
+
+    socketInstance.on('connect', () => {
       setIsConnected(true);
     });
 
-    socket.on(EVENT_TYPES.RESPONSE, (data) => {
+    socketInstance.on(EVENT_TYPES.RESPONSE, (data) => {
       const { message, sessionInfo } = data;
       setSessionInfo(prevInfo => ({
         ...prevInfo,
@@ -49,7 +51,7 @@ const Chat = () => {
       }]);
     });
 
-    socket.on(EVENT_TYPES.REALTIME, ({ message, link, sessionInfo }) => {
+    socketInstance.on(EVENT_TYPES.REALTIME, ({ message, link, sessionInfo }) => {
       setSessionInfo(sessionInfo);
       setMessages(prev => [...prev, 
         { 
@@ -61,7 +63,7 @@ const Chat = () => {
       ]);
     });
 
-    socket.on(EVENT_TYPES.APPOINTMENT, ({ message, link, sessionInfo }) => {
+    socketInstance.on(EVENT_TYPES.APPOINTMENT, ({ message, link, sessionInfo }) => {
       setSessionInfo(sessionInfo);
       setMessages(prev => [...prev, 
         { 
@@ -79,14 +81,14 @@ const Chat = () => {
       ]);
     });
 
-    socket.on(EVENT_TYPES.ERROR, (error) => {
+    socketInstance.on(EVENT_TYPES.ERROR, (error) => {
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.ERROR, 
         content: error 
       }]);
     });
 
-    socket.on('handover', ({ message, sessionInfo }) => {
+    socketInstance.on('handover', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.SYSTEM, 
@@ -96,7 +98,7 @@ const Chat = () => {
       }]);
     });
 
-    socket.on('ai-resume', ({ message, sessionInfo }) => {
+    socketInstance.on('ai-resume', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.SYSTEM, 
@@ -107,7 +109,7 @@ const Chat = () => {
     });
 
     // Listen for admin messages
-    socket.on('admin-response', ({ message, sessionInfo }) => {
+    socketInstance.on('admin-response', ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.ADMIN, 
@@ -118,7 +120,7 @@ const Chat = () => {
     });
 
     // Listen for user messages from admin
-    socket.on('user-message', ({ roomId, message, sessionInfo }) => {
+    socketInstance.on('user-message', ({ roomId, message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       setMessages(prev => [...prev, { 
         type: MESSAGE_TYPES.USER, 
@@ -129,7 +131,7 @@ const Chat = () => {
     });
 
     // Listen for representative messages
-    socket.on(EVENT_TYPES.REPRESENTATIVE_MESSAGE, ({ message, sessionInfo }) => {
+    socketInstance.on(EVENT_TYPES.REPRESENTATIVE_MESSAGE, ({ message, sessionInfo }) => {
       setSessionInfo(prev => ({ ...prev, ...sessionInfo }));
       
       // Prevent duplicate representative messages
@@ -148,18 +150,9 @@ const Chat = () => {
     });
 
     return () => {
-      socket.off('connect');
-      socket.off(EVENT_TYPES.RESPONSE);
-      socket.off(EVENT_TYPES.REALTIME);
-      socket.off(EVENT_TYPES.APPOINTMENT);
-      socket.off(EVENT_TYPES.ERROR);
-      socket.off('handover');
-      socket.off('ai-resume');
-      socket.off('admin-response');
-      socket.off('user-message');
-      socket.off(EVENT_TYPES.REPRESENTATIVE_MESSAGE);
+      socketInstance.disconnect();
     };
-  }, []);
+  }, [businessId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

@@ -1,9 +1,10 @@
-import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model, systemPrompt } from "../constants/constants.js"
+import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model, getSystemPrompt } from "../constants/constants.js"
 
-export async function sendGreeting(socket, sessionId) {
+export async function sendGreeting(socket, sessionId, businessId) {
   const session = { email: null, chatHistory: [] }
   activeChats.set(sessionId, session)
 
+  const systemPrompt = await getSystemPrompt(businessId)
   const greetingPrompt = `
 ${systemPrompt}
 

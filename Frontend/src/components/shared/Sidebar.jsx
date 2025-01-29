@@ -35,6 +35,9 @@ export function Sidebar({ onNavigation, active }) {
     }, [dispatch])
 
     const { colors, sizes } = SidebarConfig
+    useEffect(()=>{
+        dispatch
+    },[])
 
     return (
         <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} min-h-screen text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
