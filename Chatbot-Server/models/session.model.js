@@ -10,6 +10,7 @@ const sessionSchema = new mongoose.Schema({
       timestamp: { type: Date, default: Date.now },
     },
   ],
+  businessId: { type: mongoose.Schema.Types.ObjectId, ref: "Business", }
 })
 
 const Session = mongoose.model("Session", sessionSchema);

@@ -18,7 +18,8 @@ const businessSlice = createSlice({
         getAllBusiness: (state, action) => {
             state.loading = false;
             state.error = null;
-            state.businesses = Array.isArray(action.payload) ? [...action.payload] : [];
+            // Make sure payload is an array and spread it into the businesses state
+            state.businesses = Array.isArray(action.payload) ? action.payload : [];
         }
     }
 })
