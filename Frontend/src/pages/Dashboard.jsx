@@ -6,6 +6,7 @@ import Conversation from './Conversation'
 import { useDispatch } from 'react-redux'
 import { FRONTEND_URL } from '../constant'
 import { getAllBusiness } from '../redux/businessSlice'
+import EmailMarketing from './EmailMarketing'
 
 
 function Dashboard() {
@@ -43,7 +44,7 @@ function Dashboard() {
       case 'appointments':
         return <h2 className="text-2xl font-bold">Appointments</h2>
       case 'email':
-        return <h2 className="text-2xl font-bold">Email Marketing</h2>
+        return <EmailMarketing/>
       case 'add-business':
         return <AddBusiness/>
       default:
