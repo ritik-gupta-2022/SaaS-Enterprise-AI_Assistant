@@ -177,23 +177,6 @@ const Conversation = () => {
   return (
     <div className="flex h-screen bg-white">
       <div className="w-96 border-r flex flex-col">
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex space-x-2">
-            <Button variant="ghost" size="sm" className="text-sm font-normal">
-              <Mail className="h-4 w-4 mr-2" />
-              Unread
-            </Button>
-            <Separator orientation="vertical" className="h-6 bg-[#c0bbe5]/20" />
-            <Button variant="ghost" size="sm" className="text-sm font-normal">
-              <Clock className="h-4 w-4 mr-2" />
-              All
-            </Button>
-          </div>
-          <Button variant="ghost" size="sm" className="text-sm font-normal">
-            <Star className="h-4 w-4" />
-          </Button>
-        </div>
-        <Separator className="bg-[#c0bbe5]/20" />
         <div className="p-4">
           <Select value={selectedDomain} onValueChange={setSelectedDomain}>
             <SelectTrigger>
