@@ -17,10 +17,9 @@ export function AddEmailsToCampaignDialog({ open, onOpenChange, campaign, emails
     }
   }, [open])
 
-  const filteredEmails = emails.filter(
+  const filteredEmails = emails?.filter(
     (email) =>
-      email.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      email.domain.toLowerCase().includes(searchTerm.toLowerCase()),
+      email.email?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleSubmit = () => {
@@ -45,13 +44,13 @@ export function AddEmailsToCampaignDialog({ open, onOpenChange, campaign, emails
             <Search className="w-4 h-4 absolute left-2 top-3 text-gray-400" />
           </div>
           <div className="max-h-[300px] overflow-y-auto">
-            {filteredEmails.map((email) => (
-              <div key={email.id} className="flex items-center space-x-2 py-2">
+            {filteredEmails?.map((email,index) => (
+              <div key={index} className="flex items-center space-x-2 py-2">
                 <Checkbox
-                  checked={selectedEmails.includes(email.id)}
+                  checked={selectedEmails.includes(email.email)}
                   onCheckedChange={(checked) => {
                     setSelectedEmails(
-                      checked ? [...selectedEmails, email.id] : selectedEmails.filter((id) => id !== email.id),
+                      checked ? [...selectedEmails, email.email] : selectedEmails.filter((email) => email !== email.email),
                     )
                   }}
                 />
