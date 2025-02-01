@@ -20,7 +20,9 @@ function App() {
           <Route path='/' element={<Home/>} />
           <Route path='/signin' element={<SignIn/>} />
           <Route path='/signup' element={<SignUp/>} />
+
           <Route path='/chatbot' element={<Chatbot businessId={"679a6d1b6e4220a21bab0ab6"}/>} />
+
           <Route path='/appointment' element={<Appointment/>} />
 
           

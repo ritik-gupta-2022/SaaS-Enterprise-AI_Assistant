@@ -7,6 +7,7 @@ const customerSchema = new mongoose.Schema(
     session: [{ type: mongoose.Schema.Types.ObjectId, ref: "Session" }],
     appointment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
     businessId: { type: mongoose.Schema.Types.ObjectId, ref: "Business" },
+    businessOwnerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );
