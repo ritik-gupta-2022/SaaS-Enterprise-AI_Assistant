@@ -196,7 +196,8 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const session = activeChats.get(sessionId)
     if (session?.email) {
-      Session.findOneAndUpdate({ email: session.email }, { chatHistory: session.chatHistory,businessId:session.businessId }, { upsert: true }).catch(
+      Session.findOneAndUpdate({ email: session.email,businessId:session.businessId }, { chatHistory: session.chatHistory,businessId:session.businessId }, { upsert: true }).catch(
+        
         console.error,
       )
       io.to("admin").emit("user-disconnected", {
@@ -229,7 +230,7 @@ async function handleRepresentativeMessage(roomId, message) {
     })
 
     await Session.findOneAndUpdate(
-      { email: session.email },
+      { email: session.email,businessId:session.businessId },
       {
         email: session.email,
         roomId: session.roomId,

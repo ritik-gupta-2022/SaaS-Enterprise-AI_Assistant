@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';  // package for extracting cokie from browser
 import authRoutes from './routes/auth.routes.js';
 import businessRoutes from './routes/business.route.js'
+import marketingRoutes from './routes/email.route.js'
 // This line loads environment variables from the .env file into process.env
 dotenv.config()
 const app = express();
@@ -29,6 +30,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
+app.use("/api/marketing", marketingRoutes);
+
 
 
 app.get('/',(req,res)=>{

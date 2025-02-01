@@ -1,4 +1,5 @@
 import { activeChats, MESSAGE_ROLES, model, getSystemPrompt } from "../constants/constants.js"
+import Business from "../models/business.model.js"
 import Customer from "../models/customer.model.js"
 import Session from "../models/session.model.js"
 
@@ -15,23 +16,16 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
 
   if (emailMatch && !session.email) {
     const email = emailMatch[0]
-    const existingSession = await Session.findOne({ email })
-
+    const existingSession = await Session.findOne({ 
+      email, 
+      businessId: session.businessId 
+    });
+    
     if (existingSession) {
       session.email = email
       session.chatHistory = existingSession.chatHistory
     } else {
       session.email = email
-
-      const existingCustomer = await Customer.findOne({email});
-      if(!existingCustomer){
-        const customer = new Customer({
-          email,
-          businessId
-        })
-        console.log(customer);
-        await customer.save();
-      }
     }
     session.roomId = `${sessionId}`
     activeChats.set(sessionId, session)
@@ -44,8 +38,8 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
   })
 
   if (session.email && (isRepresentative || !isSystemMessage)) {
-    await Session.findOneAndUpdate(
-      { email: session.email },
+   const curr =  await Session.findOneAndUpdate(
+      { email: session.email, businessId: session.businessId },
       {
         email: session.email,
         roomId: session.roomId,
@@ -54,6 +48,24 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
       },
       { upsert: true },
     )
+    const currSession = await Session.findOne({email:session.email,businessId:session.businessId});
+    console.log(currSession);
+    const email = session.email;
+    const existingCustomer = await Customer.findOne({email});
+
+    const business = await Business.findById(businessId);
+    console.log(business?.userId);
+
+      if(!existingCustomer){
+        const customer = new Customer({
+          email,
+          businessId,
+          businessOwnerId:business?.userId
+        })
+        customer.session.push(currSession._id);
+        console.log(customer);
+        await customer.save();
+      }
   }
 
   if (isSystemMessage) {
@@ -162,7 +174,7 @@ Instructions:
 
     if (session.email) {
       await Session.findOneAndUpdate(
-        { email: session.email },
+        { email: session.email,businessId: session.businessId },
         {
           email: session.email,
           roomId: session.roomId,

@@ -6,6 +6,9 @@ import { EditEmailDialog } from "./EditEmailDialog"
 import { AddEmailsToCampaignDialog } from "./AddEmailsToCampaignDialog"
 import { CalendarIcon, Users, PlusCircle, Trash2, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { useSelector } from "react-redux"
+import { FRONTEND_URL } from "../../constant"
+import { toast } from "react-toastify"
 
 // Dummy data
 const dummyEmails= Array(20)
@@ -33,6 +36,32 @@ export default function Marketing() {
   const [selectedCampaign, setSelectedCampaign] = useState(null)
   const [emailSearchTerm, setEmailSearchTerm] = useState("")
   const [campaignSearchTerm, setCampaignSearchTerm] = useState("")
+
+  const currentUser = useSelector((state)=>state.user);
+
+  useEffect(()=>{
+    const getEmail = async () =>{
+      try{
+        const id = currentUser.currentUser._id
+        console.log(id);
+        const res = await fetch(`${FRONTEND_URL}/api/marketing/getemail/${id}`,{
+          credentials:'include'
+        })
+        const data = await res.json();
+
+        if(res.ok){
+          console.log(data);
+          setEmails(data);
+        }
+      }
+      catch(err){
+        console.log(err);
+        toast.error(err.message)
+      }
+    }
+    getEmail();
+  },[])
+
 
   const filteredEmails = emails.filter(
     (email) =>
@@ -126,10 +155,10 @@ export default function Marketing() {
                         size="sm"
                         className="px-3 py-1 h-auto bg-[#c0bbe5]/20 text-gray-800 hover:bg-[#c0bbe5]/30"
                       >
-                        {email.answers}
+                        View
                       </Button>
                     </div>
-                    <div className="text-gray-500">{email.domain}</div>
+                    <div className="text-gray-500">{email?.businessId?.name}</div>
                   </div>
                 ))
               )}
