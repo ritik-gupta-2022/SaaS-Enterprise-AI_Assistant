@@ -7,21 +7,27 @@ import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 
 export function AddEmailsToCampaignDialog({ open, onOpenChange, campaign, emails, onSubmit}) {
-  const [selectedEmails, setSelectedEmails] = useState([])
+  const [selectedEmails, setSelectedEmails] = useState(campaign? campaign.emails : [])
   const [searchTerm, setSearchTerm] = useState("")
+  const [filteredEmails, setFilteredEmails] = useState([]);
 
   useEffect(() => {
+
     if (open) {
-      setSelectedEmails([])
+      setSelectedEmails(campaign? campaign.emails : [])
       setSearchTerm("")
+      setFilteredEmails(emails?.filter(
+        (email) =>
+          email.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      ))
     }
+    console.log(selectedEmails)
+    console.log(emails)
+    console.log(filteredEmails)
   }, [open])
 
-  const filteredEmails = emails?.filter(
-    (email) =>
-      email.email?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
+  
+  
   const handleSubmit = () => {
     onSubmit(selectedEmails)
     onOpenChange(false)
@@ -47,10 +53,12 @@ export function AddEmailsToCampaignDialog({ open, onOpenChange, campaign, emails
             {filteredEmails?.map((email,index) => (
               <div key={index} className="flex items-center space-x-2 py-2">
                 <Checkbox
-                  checked={selectedEmails.includes(email.email)}
+                  checked={selectedEmails?.includes(email.email)}
                   onCheckedChange={(checked) => {
-                    setSelectedEmails(
-                      checked ? [...selectedEmails, email.email] : selectedEmails.filter((email) => email !== email.email),
+                    setSelectedEmails((prevSelected) =>
+                      checked
+                        ? [...prevSelected, email.email]
+                        : prevSelected.filter((e) => e !== email.email)
                     )
                   }}
                 />

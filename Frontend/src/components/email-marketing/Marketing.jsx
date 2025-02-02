@@ -132,7 +132,7 @@ export default function Marketing() {
       campaign._id === campaignId
         ? { 
             ...campaign, 
-            emails: [...(campaign.emails || []), ...allemail],
+            emails: [ ...allemail],
             emailContent: emailContent || campaign.emailContent
           }
         : campaign,
