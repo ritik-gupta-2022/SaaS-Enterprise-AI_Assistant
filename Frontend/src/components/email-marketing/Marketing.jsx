@@ -109,9 +109,26 @@ export default function Marketing() {
     }
   };
 
-  // useEffect(() => {
-  //   console.log(campaigns);
-  // }, [campaigns]);
+  const sendCampaign = async (campaignId) => {
+    try {
+      const response = await fetch(`${FRONTEND_URL}/api/marketing/sendcampaign/${campaignId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials:'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to send campaign');
+      }
+      const data = await response.json();
+      toast.success('Campaign sent successfully');
+      console.log('Campaign sent successfully:', data);
+    } catch (error) {
+      toast.error(error.message);
+      console.log('Error sending campaign:', error);
+    }
+  };
 
   const filteredEmails = emails?.filter(
     (email) =>
@@ -277,6 +294,7 @@ export default function Marketing() {
                       setSelectedCampaign(campaign)
                       setAddEmailsDialogOpen(true)
                     }}
+                    disabled={campaign.sent}
                   >
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Add Emails
@@ -289,10 +307,12 @@ export default function Marketing() {
                       setSelectedCampaign(campaign)
                       setEditDialogOpen(true)
                     }}
+                    disabled={campaign.sent}
                   >
                     Edit Email
                   </Button>
-                  <Button size="sm" className="bg-[#c0bbe5] hover:bg-[#c0bbe5]/90 text-gray-800">
+                  <Button size="sm" className="bg-[#c0bbe5] hover:bg-[#c0bbe5]/90 text-gray-800" 
+                    onClick={() => sendCampaign(campaign._id) } disabled={campaign.sent} >
                     Send
                   </Button>
                 </div>

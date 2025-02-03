@@ -3,6 +3,7 @@ import Business from "../models/business.model.js";
 import Campaign from "../models/campaign.model.js";
 import Customer from "../models/customer.model.js";
 import { errorHandler } from "../utils/error.js";
+import { mail } from "../utils/mail.js";
 
 export const getEmailByBusinessId = async (req, res, next)=>{
     const userId = req.user.id;
@@ -76,7 +77,7 @@ export const updateCampaign = async(req,res,next) =>{
     }
 
     try {
-        const campaign = await Campaign.findById(campaignId,  );
+        const campaign = await Campaign.findById(campaignId);
         campaign.emails = newCampaign.emails;
         campaign.emailContent= newCampaign.emailContent;
         await campaign.save();
@@ -87,3 +88,31 @@ export const updateCampaign = async(req,res,next) =>{
         next(err);
     }
 }
+
+
+export const sendMail = async (req, res, next) => {
+    const campaignId = req.params.campaignId;
+      
+
+    try {
+        const campaign = await Campaign.findById(campaignId);
+
+        if (!campaign) {
+            return next(errorHandler(404, 'No Campaign found'));
+        }
+
+        const emails = campaign.emails;
+        if (!emails || emails.length === 0) {
+            return next(errorHandler(404, 'No customer found.'));
+        }
+
+        // Send Emails to All Contacts
+        await Promise.all(emails.map((email) => mail(campaign.name ,campaign.emailContent, email)));
+        campaign.sent = true;
+        await campaign.save();
+        res.status(200).json({ message: 'Emails sent successfully' });
+    } catch (err) {
+        console.error('Error in sendMail:', err);
+        return next(errorHandler(500, 'Internal Server Error'));
+    }
+};

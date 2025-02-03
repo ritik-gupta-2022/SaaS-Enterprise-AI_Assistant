@@ -7,6 +7,7 @@ const campaignSchema = new mongoose.Schema(
     business: [{ type: mongoose.Schema.Types.ObjectId, ref: "Business" }],
     emailContent: { type: String },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    sent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
