@@ -10,25 +10,10 @@ import { useSelector } from "react-redux"
 import { FRONTEND_URL } from "../../constant"
 import { toast } from "react-toastify"
 
-// Dummy data
-const dummyEmails= Array(20)
-  .fill(null)
-  .map((_, i) => ({
-    id: `email-${i + 1}`,
-    email: `user${i + 1}@example.com`,
-    answers: "View",
-    domain: `example${(i % 3) + 1}.com`,
-  }))
-
-const dummyCampaigns = [
-  { id: "1", name: "Summer Sale", created: "June 1", customers: 0 },
-  { id: "2", name: "New Product Launch", created: "June 15", customers: 0 },
-  { id: "3", name: "Customer Feedback", created: "June 20", customers: 0 },
-]
 
 export default function Marketing() {
-  const [emails, setEmails] = useState(dummyEmails)
-  const [campaigns, setCampaigns] = useState(dummyCampaigns)
+  const [emails, setEmails] = useState(null)
+  const [campaigns, setCampaigns] = useState(null)
   const [loading, setLoading] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -59,31 +44,120 @@ export default function Marketing() {
         toast.error(err.message)
       }
     }
+
+    const getCampaign = async () =>{
+      try{
+        const id = currentUser.currentUser._id
+
+        const res = await fetch(`${FRONTEND_URL}/api/marketing/getcampaign/`,{
+          credentials:'include'
+        })
+
+        const data = await res.json();
+
+        // console.log(data);
+        if(res.ok){
+          setCampaigns(data);
+        }
+      }
+      catch(err){
+        console.log(err);
+        toast.error(err.message)
+      }
+    }
     getEmail();
+    getCampaign();
   },[])
 
+  const createCamapign = async (newCampaign) => {
+    try {
+      console.log(newCampaign)
+      const res = await fetch(`${FRONTEND_URL}/api/marketing/createCampaign`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newCampaign),
+        credentials:'include'
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      console.log(error)
+      console.error('Error creating campaign:', error);
+    }
+  };
 
-  const filteredEmails = emails.filter(
+  const updateCampaign = async (campaignId, updatedCampaign) => {
+    try {
+      const res = await fetch(`/api/marketing/updatecampaign/${campaignId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedCampaign),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(err);
+      console.error('Error updating campaign:', error);
+    }
+  };
+
+  const sendCampaign = async (campaignId) => {
+    try {
+      const response = await fetch(`${FRONTEND_URL}/api/marketing/sendcampaign/${campaignId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials:'include'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to send campaign');
+      }
+      const data = await response.json();
+      toast.success('Campaign sent successfully');
+      console.log('Campaign sent successfully:', data);
+    } catch (error) {
+      toast.error(error.message);
+      console.log('Error sending campaign:', error);
+    }
+  };
+
+  const filteredEmails = emails?.filter(
     (email) =>
-      email.email.toLowerCase().includes(emailSearchTerm.toLowerCase()) ||
-      email.domain.toLowerCase().includes(emailSearchTerm.toLowerCase()),
+      email.email?.toLowerCase().includes(emailSearchTerm.toLowerCase()) ||
+      email.domain?.toLowerCase().includes(emailSearchTerm.toLowerCase()),
   )
 
-  const filteredCampaigns = campaigns.filter((campaign) =>
+  const filteredCampaigns = campaigns?.filter((campaign) =>
     campaign.name.toLowerCase().includes(campaignSearchTerm.toLowerCase()),
   )
 
   const handleDeleteCampaign = (campaignId) => {
-    setCampaigns(campaigns.filter((campaign) => campaign.id !== campaignId))
+    setCampaigns(campaigns?.filter((campaign) => campaign._id !== campaignId))
   }
 
-  const handleAddEmailsToCampaign = (campaignId, emailIds) => {
-    setCampaigns(
-      campaigns.map((campaign) =>
-        campaign.id === campaignId ? { ...campaign, customers: campaign.customers + emailIds.length } : campaign,
-      ),
-    )
-  }
+  const handleAddEmailsToCampaign = (campaignId, allemail, emailContent) => {
+    const updatedCampaigns = campaigns?.map((campaign) =>
+      campaign._id === campaignId
+        ? { 
+            ...campaign, 
+            emails: [ ...allemail],
+            emailContent: emailContent || campaign.emailContent
+          }
+        : campaign,
+    );
+    setCampaigns(updatedCampaigns);
+    const updatedCampaign = updatedCampaigns.find(campaign => campaign._id === campaignId);
+    updateCampaign(campaignId, updatedCampaign);
+  };
 
   const handleCreateCampaign = (name) => {
     const newCampaign = {
@@ -91,13 +165,22 @@ export default function Marketing() {
       name,
       created: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       customers: 0,
+      emails: [],
+      emailContent: ''
     }
     setCampaigns([...campaigns, newCampaign])
+    createCamapign(newCampaign);
   }
 
   const handleEditEmail = (campaignId, emailContent) => {
-    setCampaigns(campaigns.map((campaign) => (campaign.id === campaignId ? { ...campaign, emailContent } : campaign)))
-  }
+    console.log(campaignId);
+    const updatedCampaigns = campaigns.map((campaign) => 
+      campaign._id === campaignId ? { ...campaign, emailContent } : campaign
+    );
+    setCampaigns(updatedCampaigns);
+    const updatedCampaign = updatedCampaigns.find(campaign => campaign._id === campaignId);
+    updateCampaign(campaignId, updatedCampaign);
+  };
 
   return (
     <div className="min-h-screen bg-[#c0bbe5]/10">
@@ -143,11 +226,11 @@ export default function Marketing() {
             <div className="divide-y max-h-[600px] overflow-y-auto">
               {loading ? (
                 <div className="p-4 text-center text-gray-500">Loading emails...</div>
-              ) : filteredEmails.length === 0 ? (
+              ) : filteredEmails?.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">No emails found</div>
               ) : (
-                filteredEmails.map((email) => (
-                  <div key={email.id} className="grid grid-cols-3 gap-4 p-4 items-center hover:bg-gray-50">
+                filteredEmails?.map((email,index) => (
+                  <div key={index} className="grid grid-cols-3 gap-4 p-4 items-center hover:bg-gray-50">
                     <div>{email.email}</div>
                     <div>
                       <Button
@@ -179,8 +262,8 @@ export default function Marketing() {
                 <Search className="w-4 h-4 absolute left-2 top-3 text-gray-400" />
               </div>
             </div>
-            {filteredCampaigns.map((campaign) => (
-              <div key={campaign.id} className="bg-white border rounded-lg p-4 shadow-sm">
+            {filteredCampaigns?.map((campaign) => (
+              <div key={campaign._id} className="bg-white border rounded-lg p-4 shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-800">{campaign.name}</h3>
                   <Button
@@ -199,7 +282,7 @@ export default function Marketing() {
                   </div>
                   <div className="flex items-center space-x-1">
                     <Users className="w-4 h-4" />
-                    <span>{campaign.customers} customers</span>
+                    <span>{campaign.emails.length} customers</span>
                   </div>
                 </div>
                 <div className="flex justify-end space-x-2">
@@ -211,6 +294,7 @@ export default function Marketing() {
                       setSelectedCampaign(campaign)
                       setAddEmailsDialogOpen(true)
                     }}
+                    disabled={campaign.sent}
                   >
                     <PlusCircle className="w-4 h-4 mr-2" />
                     Add Emails
@@ -223,10 +307,12 @@ export default function Marketing() {
                       setSelectedCampaign(campaign)
                       setEditDialogOpen(true)
                     }}
+                    disabled={campaign.sent}
                   >
                     Edit Email
                   </Button>
-                  <Button size="sm" className="bg-[#c0bbe5] hover:bg-[#c0bbe5]/90 text-gray-800">
+                  <Button size="sm" className="bg-[#c0bbe5] hover:bg-[#c0bbe5]/90 text-gray-800" 
+                    onClick={() => sendCampaign(campaign._id) } disabled={campaign.sent} >
                     Send
                   </Button>
                 </div>
@@ -247,7 +333,7 @@ export default function Marketing() {
         onOpenChange={setEditDialogOpen}
         onSubmit={(message) => {
           if (selectedCampaign) {
-            handleEditEmail(selectedCampaign.id, message)
+            handleEditEmail(selectedCampaign._id, message)
           }
           setEditDialogOpen(false)
         }}
@@ -259,9 +345,9 @@ export default function Marketing() {
         onOpenChange={setAddEmailsDialogOpen}
         campaign={selectedCampaign}
         emails={emails}
-        onSubmit={(selectedEmailIds) => {
+        onSubmit={(selectedEmails) => {
           if (selectedCampaign) {
-            handleAddEmailsToCampaign(selectedCampaign.id, selectedEmailIds)
+            handleAddEmailsToCampaign(selectedCampaign._id, selectedEmails)
           }
           setAddEmailsDialogOpen(false)
         }}

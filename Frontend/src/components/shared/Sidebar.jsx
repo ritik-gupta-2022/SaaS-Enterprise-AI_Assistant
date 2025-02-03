@@ -75,9 +75,9 @@ export function Sidebar({ onNavigation, active }) {
             <div className="mt-4 bg-white rounded-lg p-2">
                 <nav className="space-y-1 overflow-y-scroll h-48">
                     {businesses.length > 0 ? (
-                        businesses.map((business) => (
+                        businesses.map((business,index) => (
                             <button
-                                key={business.id}
+                                key={index}
                                 onClick={() => onNavigation(business.id)}
                                 className={`flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center text-black' : 'text-black'}`}
                             >
