@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { cn } from "@/lib/utils"; // Import cn utility
+import { CHAT_BACKEND_URL } from '../../constant';
 
 const MESSAGE_TYPES = {
   USER: 'user',
@@ -30,7 +31,7 @@ const Chat = ({ businessId }) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    socketRef.current = io('http://localhost:5000', {
+    socketRef.current = io(`${CHAT_BACKEND_URL}`, {
       query: { businessId },
     });
 
@@ -205,7 +206,12 @@ const Chat = ({ businessId }) => {
                 <small className="block text-xs text-gray-500 mb-1">
                   {message.type.charAt(0).toUpperCase() + message.type.slice(1)}
                 </small>
-                {message.content}
+                {message.content.split(/\s+/).map((word, i) => {
+                  if (word.match(/^(http|https):\/\/[^\s]+$/)) {
+                    return <a key={i} href={word} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Click Here!</a>;
+                  }
+                  return ` ${word} `;
+                })}
                 {message.tags?.length > 0 && (
                   <div className="mt-1">
                     {message.tags.map((tag, i) => (

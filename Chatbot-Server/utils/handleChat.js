@@ -9,7 +9,7 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
     session = { email: null, chatHistory: [], waitingForRepresentative: false, isWithRepresentative: false,businessId:businessId }
     activeChats.set(sessionId, session)
   }
-  console.log(session);
+  // console.log(session);
 
 
   const emailMatch = message.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/)
@@ -49,12 +49,12 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
       { upsert: true },
     )
     const currSession = await Session.findOne({email:session.email,businessId:session.businessId});
-    console.log(currSession);
+    // console.log(currSession);
     const email = session.email;
     const existingCustomer = await Customer.findOne({email});
 
     const business = await Business.findById(businessId);
-    console.log(business?.userId);
+    // console.log(business?.userId);
 
       if(!existingCustomer){
         const customer = new Customer({
@@ -63,7 +63,7 @@ async function handleChat(sessionId, message, isRepresentative = false, isSystem
           businessOwnerId:business?.userId
         })
         customer.session.push(currSession._id);
-        console.log(customer);
+        // console.log(customer);
         await customer.save();
       }
   }

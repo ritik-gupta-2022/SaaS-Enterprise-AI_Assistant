@@ -4,7 +4,7 @@ import { errorHandler } from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
 export const signup = async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { name, email, password } = req.body;
 
   if (

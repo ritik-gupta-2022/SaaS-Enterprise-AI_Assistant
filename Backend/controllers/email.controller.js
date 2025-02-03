@@ -8,7 +8,7 @@ import { mail } from "../utils/mail.js";
 export const getEmailByBusinessId = async (req, res, next)=>{
     const userId = req.user.id;
     const businessOwnerId = req.params.businessOwnerId;
-    console.log(req.params.businessId);
+    // console.log(req.params.businessId);
     if(!userId){
         return next(errorHandler(400, "You are not authorized"));
     }
@@ -23,7 +23,7 @@ export const getEmailByBusinessId = async (req, res, next)=>{
         }
 
         const customers = await Customer.find({ businessOwnerId }).populate("businessId");
-        console.log(customers);
+        // console.log(customers);
         res.status(200).json(customers);
     }catch(err){
         console.log(err);

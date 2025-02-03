@@ -6,8 +6,11 @@ import { TimeSlotPicker } from "./TimeSlotPicker"
 import { ConfirmationModal } from "./ConfirmationModal"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-export function AppointmentScheduler() {
+import { toast,ToastContainer } from "react-toastify"
+import { CHAT_BACKEND_URL } from "../../constant"
+export function AppointmentScheduler({email,businessid}) {
+  // console.log('Email:', email);
+  // console.log('Business ID:', businessid);
   const [selectedDate, setSelectedDate] = useState(undefined)
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(undefined)
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false)
@@ -25,8 +28,25 @@ export function AppointmentScheduler() {
     setIsConfirmationOpen(true)
   }
 
-  const handleConfirmAppointment = () => {
+  const handleConfirmAppointment = async () => {
     console.log("Appointment booked:", { date: selectedDate, timeSlot: selectedTimeSlot })
+    const response = await fetch(`${CHAT_BACKEND_URL}/book`, {
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+      date: selectedDate,
+      slot: selectedTimeSlot,
+      email: email,
+      businessId: businessid,
+      }),
+    });
+
+    if (response.ok) {
+      toast.success("Appointment booked successfully!");
+    } else {("Failed to book appointment. Please try again.");
+    }
     setIsConfirmationOpen(false)
     setSelectedDate(undefined)
     setSelectedTimeSlot(undefined)
@@ -77,6 +97,7 @@ export function AppointmentScheduler() {
           timeSlot={selectedTimeSlot}
         />
       </CardContent>
+      <ToastContainer />
     </Card>
   )
 }

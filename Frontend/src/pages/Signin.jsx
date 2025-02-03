@@ -43,7 +43,7 @@ const Signin = () => {
         },
         withCredentials: true,
       });
-      console.log(response);
+      // console.log(response);
   
       if (response.status === 200) {
         toast.success('Signin successful!'); // Add success toast
@@ -58,6 +58,8 @@ const Signin = () => {
       dispatch(signInFailure(error.response.data));
       console.log(error.response.data);
       toast.error('Signup failed. Please try again.'); 
+      // console.log(error.response.data);
+      toast.error('Signup failed. Please try again.'); // Optional: Add error toast
     }
   };
 
