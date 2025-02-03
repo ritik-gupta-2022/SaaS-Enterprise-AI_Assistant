@@ -95,6 +95,10 @@ export const signin = async (req, res, next) => {
 
 export const signout = (req, res, next) => {
   try {
+    const token = req.cookies.access_token;
+    if (!token) {
+      return res.status(400).json("No token found");
+    }
     res
       .clearCookie("access_token")
       .status(200)
