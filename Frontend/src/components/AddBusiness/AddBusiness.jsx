@@ -181,7 +181,7 @@ const AddBusiness = () => {
 
     if (step === questions.length - 1) {
       // setIsLoading(true);
-      console.log("Collected Form Data:", formData);
+      // console.log("Collected Form Data:", formData);
       await handleSubmit();
       setTimeout(() => {
         setIsLoading(false)

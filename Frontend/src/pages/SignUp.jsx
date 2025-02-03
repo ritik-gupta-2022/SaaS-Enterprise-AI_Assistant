@@ -29,7 +29,7 @@ const SignUp = () => {
         },
         withCredentials: true,
       });
-      console.log(response);
+      // console.log(response);
   
       if (response.status === 200) {
         toast.success('Signup successful!'); // Add success toast
@@ -42,7 +42,7 @@ const SignUp = () => {
       }
     } catch (error) {
       dispatch(signUpFailure(error.response.data));
-      console.log(error.response.data);
+      // console.log(error.response.data);
       toast.error('Signup failed. Please try again.'); // Optional: Add error toast
     }
   };

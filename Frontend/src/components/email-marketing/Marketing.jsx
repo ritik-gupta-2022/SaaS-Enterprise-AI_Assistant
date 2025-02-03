@@ -43,14 +43,14 @@ export default function Marketing() {
     const getEmail = async () =>{
       try{
         const id = currentUser.currentUser._id
-        console.log(id);
+        // console.log(id);
         const res = await fetch(`${FRONTEND_URL}/api/marketing/getemail/${id}`,{
           credentials:'include'
         })
         const data = await res.json();
 
         if(res.ok){
-          console.log(data);
+          // console.log(data);
           setEmails(data);
         }
       }
