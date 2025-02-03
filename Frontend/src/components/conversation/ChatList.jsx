@@ -14,7 +14,7 @@ export function ChatList({ chats, selectedChat, onSelectChat }) {
   return (
     <ScrollArea className="flex-1">
       <div className="space-y-2 p-2">
-        {console.log(chats)}
+        {/* {console.log(chats)} */}
         {chats.map((chat) => (
           <Button
             key={chat._id}
