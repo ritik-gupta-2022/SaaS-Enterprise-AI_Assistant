@@ -12,6 +12,8 @@ import { ChatList } from "../components/conversation/ChatList"
 import { ChatMessage } from "../components/conversation/ChatMessage"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { CHAT_BACKEND_URL } from '../constant';
+import { useSelector } from 'react-redux';
 
 const socket = io('http://localhost:5000');
 const EVENT_TYPES = {
@@ -30,6 +32,8 @@ const EVENT_TYPES = {
 const domains = ["trial5.com", "example.com"]
 
 const Conversation = () => {
+  const {currentUser} = useSelector((state) => state.user);
+  console.log(currentUser);
   const [customers, setCustomers] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [inputMessage, setInputMessage] = useState('');
@@ -37,7 +41,13 @@ const Conversation = () => {
   const [isRealTimeChat, setIsRealTimeChat] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/customers')
+    fetch(`${CHAT_BACKEND_URL}/customers`,{
+      method: 'POST',  // Changed from 'GET' to 'POST'
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({business: currentUser.businesses}) // Fix: only send businesses property
+    })
       .then(response => response.json())
       .then(data => {
         const customersWithStatus = data.map(customer => ({
@@ -54,7 +64,7 @@ const Conversation = () => {
         });
       })
       .catch(error => console.error('Error fetching customers:', error));
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
     const handleServerResponse = (data) => {
@@ -177,23 +187,6 @@ const Conversation = () => {
   return (
     <div className="flex h-screen bg-white">
       <div className="w-96 border-r flex flex-col">
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex space-x-2">
-            <Button variant="ghost" size="sm" className="text-sm font-normal">
-              <Mail className="h-4 w-4 mr-2" />
-              Unread
-            </Button>
-            <Separator orientation="vertical" className="h-6 bg-[#c0bbe5]/20" />
-            <Button variant="ghost" size="sm" className="text-sm font-normal">
-              <Clock className="h-4 w-4 mr-2" />
-              All
-            </Button>
-          </div>
-          <Button variant="ghost" size="sm" className="text-sm font-normal">
-            <Star className="h-4 w-4" />
-          </Button>
-        </div>
-        <Separator className="bg-[#c0bbe5]/20" />
         <div className="p-4">
           <Select value={selectedDomain} onValueChange={setSelectedDomain}>
             <SelectTrigger>

@@ -26,15 +26,18 @@ export const addBusiness = async (req,res,next) =>{
         
         const business = new Business({ userId ,name, businessUrl, description, contactNo, businessEmail});
         await business.save();
+        business.appointmentUrl = `${process.env.FRONT_URL}/appointment/${business._id}`;
+        await business.save();
 
         user.businesses.push(business._id);
         await user.save();
 
         const chatbot = await createChatbot(userId, business._id);
-        console.log(chatbot)
+        // console.log(chatbot)
         business.chatBot = chatbot._id;
 
         await business.save();
+
         res.status(201).json({business , user});
     }
     catch(err){

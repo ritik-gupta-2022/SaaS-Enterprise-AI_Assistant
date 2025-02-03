@@ -3,9 +3,11 @@ import { Sidebar } from '../components/shared/Sidebar'
 import { DashboardOverview } from '../components/dashboard/Overview'
 import AddBusiness from '../components/AddBusiness/AddBusiness'
 import Conversation from './Conversation'
+import DashAppointment from './DashAppointment'
 import { useDispatch } from 'react-redux'
 import { FRONTEND_URL } from '../constant'
 import { getAllBusiness } from '../redux/businessSlice'
+import EmailMarketing from './EmailMarketing'
 
 
 function Dashboard() {
@@ -18,11 +20,11 @@ function Dashboard() {
           credentials: 'include',
         });
         const data = await res.json();
-        console.log(data);
+        // console.log(data);
         if (res.ok) {
           dispatch(getAllBusiness(data));
         } else {
-          console.log(data.message);
+          // console.log(data.message);
         }
       } catch (err) {
         console.log(err);
@@ -41,9 +43,9 @@ function Dashboard() {
       case 'settings':
         return <h2 className="text-2xl font-bold">Settings</h2>
       case 'appointments':
-        return <h2 className="text-2xl font-bold">Appointments</h2>
+        return <DashAppointment/>
       case 'email':
-        return <h2 className="text-2xl font-bold">Email Marketing</h2>
+        return <EmailMarketing/>
       case 'add-business':
         return <AddBusiness/>
       default:

@@ -4,8 +4,8 @@ import Business from "../models/business.model.js" // Added import
 dotenv.config()
 
 export const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
-// export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
-export const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
+export const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+// export const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" })
 
 
 export const activeChats = new Map()
@@ -36,6 +36,7 @@ export async function getSystemPrompt(businessId) {
     if (!business) {
         return "Business not found."
     }
+    console.log(business.appointmentUrl);
     return `You are a helpful, professional assistant designed specifically for ${business.name}. ${business.description}
 
 Website: ${business.businessUrl || ""}
@@ -45,7 +46,12 @@ Always respond in a tone and style suitable for this business. Your goal is to h
 
 Progress the conversation naturally, asking relevant questions to gather information. When you ask an important question that’s crucial for lead generation, add the keyword ⚡complete⚡ at the end of the question.
 
-If the customer expresses interest in booking an appointment or scheduling a consultation, provide them with the appointment URL and add the keyword ⚡appointment⚡ at the end.
+Booking an appointment is different task and asking for a reltime chat is different task.
+
+APPOINTMENT BOOKING SCENARIO:
+If the customer expresses interest in booking an appointment or scheduling a consultation, provide them with the Appointment URL and append the /useremail including slash is important before useremail while givng appointment url at the end of url which will be provided by the user before add the keyword ⚡appointment⚡ at the end.
+
+--Example message: "You can book an appointment by visiting [Appointment URL]/useremail ⚡appointment⚡"
 
 REAL-TIME CHAT SCENARIO:
 1. If the user asks for real-time support or if you need to redirect them to a human representative:
