@@ -29,42 +29,59 @@ const EVENT_TYPES = {
   ADMIN_RESPONSE: 'admin-response'
 };
 
-const domains = ["trial5.com", "example.com"]
-
 const Conversation = () => {
   const {currentUser} = useSelector((state) => state.user);
-  console.log(currentUser);
+  const businesses = useSelector((state) => state.business.businesses);
+  const domains = businesses;
   const [customers, setCustomers] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [inputMessage, setInputMessage] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState(domains[0]);
-  const [isRealTimeChat, setIsRealTimeChat] = useState(false);
+  const [selectedDomain, setSelectedDomain] = useState(null);
+  const [filteredCustomers, setFilteredCustomers] = useState([]);
 
+  // Initialize selectedDomain when businesses load
   useEffect(() => {
-    fetch(`${CHAT_BACKEND_URL}/customers`,{
-      method: 'POST',  // Changed from 'GET' to 'POST'
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({business: currentUser.businesses}) // Fix: only send businesses property
-    })
-      .then(response => response.json())
-      .then(data => {
-        const customersWithStatus = data.map(customer => ({
-          ...customer,
-          isOnline: false
-        }));
-        setCustomers(customersWithStatus);
-        customersWithStatus.forEach(customer => {
-          socket.emit('checkRoomStatus', customer.roomId, (response) => {
-            setCustomers(prevCustomers => prevCustomers.map(c => 
-              c.roomId === customer.roomId ? { ...c, isOnline: response.isActive } : c
-            ));
-          });
-        });
+    if (domains && domains.length > 0 && !selectedDomain) {
+      setSelectedDomain(domains[0]);
+    }
+  }, [domains]);
+
+  // Fetch and filter customers when selectedDomain changes
+  useEffect(() => {
+    if (selectedDomain && currentUser) {
+      fetch(`${CHAT_BACKEND_URL}/customers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({business: currentUser.businesses})
       })
-      .catch(error => console.error('Error fetching customers:', error));
-  }, [currentUser]);
+        .then(response => response.json())
+        .then(data => {
+          const customersWithStatus = data.map(customer => ({
+            ...customer,
+            isOnline: false
+          }));
+          setCustomers(customersWithStatus);
+          
+          // Filter customers for selected domain
+          const filtered = customersWithStatus.filter(customer => 
+            customer.businessId === selectedDomain._id
+          );
+          setFilteredCustomers(filtered);
+
+          // Check online status for each customer
+          customersWithStatus.forEach(customer => {
+            socket.emit('checkRoomStatus', customer.roomId, (response) => {
+              setCustomers(prevCustomers => prevCustomers.map(c => 
+                c.roomId === customer.roomId ? { ...c, isOnline: response.isActive } : c
+              ));
+            });
+          });
+        })
+        .catch(error => console.error('Error fetching customers:', error));
+    }
+  }, [currentUser, selectedDomain]);
 
   useEffect(() => {
     const handleServerResponse = (data) => {
@@ -188,14 +205,17 @@ const Conversation = () => {
     <div className="flex h-screen bg-white">
       <div className="w-96 border-r flex flex-col">
         <div className="p-4">
-          <Select value={selectedDomain} onValueChange={setSelectedDomain}>
+          <Select value={selectedDomain?._id} onValueChange={(value) => {
+            const domain = domains.find(d => d._id === value);
+            setSelectedDomain(domain);
+          }}>
             <SelectTrigger>
               <SelectValue placeholder="Select domain" />
             </SelectTrigger>
             <SelectContent>
               {domains.map((domain) => (
-                <SelectItem key={domain} value={domain}>
-                  {domain}
+                <SelectItem key={domain._id} value={domain._id}>
+                  {domain.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -208,7 +228,7 @@ const Conversation = () => {
             <Input placeholder="Search..." className="pl-9" />
           </div>
         </div>
-        <ChatList chats={customers} selectedChat={selectedChat} onSelectChat={handleSelectChat} />
+        <ChatList chats={filteredCustomers} selectedChat={selectedChat} onSelectChat={handleSelectChat} />
       </div>
 
       <div className="flex-1 flex flex-col">
@@ -221,12 +241,12 @@ const Conversation = () => {
               <p className="text-lg text-muted-foreground">View all the customer chats with the assistant and provide real time assistan.</p>
             </div>
             <div className="flex items-center space-x-2">
-              <Switch
+              {/* <Switch
                 id="real-time-chat"
                 checked={isRealTimeChat}
                 onCheckedChange={setIsRealTimeChat}
                 className="data-[state=checked]:bg-[#c0bbe5]"
-              />
+              /> */}
               <Label htmlFor="real-time-chat">Real-time Chat</Label>
             </div>
           </div>
