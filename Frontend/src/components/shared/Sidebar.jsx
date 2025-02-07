@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import SparklesText from '../ui/sparkles-text'
 import { getAllBusiness } from '../../redux/businessSlice'
+import { FRONTEND_URL } from '../../constant'
+import { useNavigate } from 'react-router-dom'
+import { logoutUser } from '../../redux/userSlice'
+import { toast, ToastContainer } from 'react-toastify'
 
 const SidebarConfig = {
     colors: {
@@ -27,6 +31,7 @@ export function Sidebar({ onNavigation, active }) {
         { icon: Mail, label: 'Email Marketing', id: 'email' },
         { icon: Plus, label: 'Add Business', id: 'add-business' },
     ])
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const businesses = useSelector((state) => state.business.businesses)
 
@@ -38,6 +43,28 @@ export function Sidebar({ onNavigation, active }) {
     useEffect(()=>{
         dispatch
     },[])
+
+    const handleLogout = async () => {
+        // console.log("Logout clicked");
+        try {
+            const response = await fetch(`${FRONTEND_URL}/api/auth/signout`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+          });
+          if (!response.ok) {
+            throw new Error('Failed to logout');
+          }
+          dispatch(logoutUser());
+          toast.success('Logged out successfully');
+          navigate('/signin');
+        } catch (error) {
+            
+          console.log('Error during logout:', error);
+        }
+    };
 
     return (
         <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} min-h-screen text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
@@ -95,7 +122,7 @@ export function Sidebar({ onNavigation, active }) {
             </div>
 
             <div className={`text-black mt-3 border-t border-gray-800 absolute bottom-4 left-2 right-2 px-4`}>
-                <button className={`mt-2 mb-0 flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
+                <button onClick={handleLogout} className={`mt-2 mb-0 flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center' : ''}`} >
                     <LogOut className="w-5 h-5" />
                     {!isCollapsed && <span>Sign out</span>}
                 </button>

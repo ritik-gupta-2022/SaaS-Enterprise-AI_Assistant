@@ -56,7 +56,7 @@ const Signin = () => {
       }
     } catch (error) {
       dispatch(signInFailure(error.response.data));
-      // console.log(error.response.data);
+      console.log(error);
       toast.error('Signup failed. Please try again.'); // Optional: Add error toast
     }
   };
