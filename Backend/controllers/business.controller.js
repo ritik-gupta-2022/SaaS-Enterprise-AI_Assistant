@@ -120,3 +120,35 @@ export const deleteBusiness = async (req, res, next) => {
         next(err);
     }
 };
+
+
+// update business details
+
+export const updateBusiness = async (req, res, next) => {
+    const businessId = req.params.businessId;
+    const userId = req.user.id;
+    const { name, businessUrl, description, contactNo, businessEmail } = req.body;
+    try{
+        const business = await Business.findById(businessId);
+
+        if(!business){
+            return next(errorHandler(404, "Business not found"));
+        }
+
+        if(business.userId!=userId){
+            return next(errorHandler(403, "You are not allowed to update this business"));
+        }
+
+        business.name = name || business.name;
+        business.businessUrl = businessUrl || business.businessUrl;
+        business.description = description || business.description;
+        business.contactNo = contactNo || business.contactNo;
+        business.businessEmail = businessEmail || business.businessEmail;
+
+        await business.save();
+        res.status(200).json(business);
+    }
+    catch(err){
+        next(err);
+    }
+}
