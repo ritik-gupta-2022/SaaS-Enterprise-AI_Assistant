@@ -3,6 +3,7 @@ import { Sidebar } from '../components/shared/Sidebar'
 import { DashboardOverview } from '../components/dashboard/Overview'
 import AddBusiness from '../components/AddBusiness/AddBusiness'
 import Conversation from './Conversation'
+import Business from './Business.jsx'
 import DashAppointment from './DashAppointment'
 import { useDispatch } from 'react-redux'
 import { FRONTEND_URL } from '../constant'
@@ -49,14 +50,14 @@ function Dashboard() {
       case 'add-business':
         return <AddBusiness/>
       default:
-        return <h2 className="text-2xl font-bold">Dashboard Overview</h2>
+        return <Business businessid={activeSection}/>
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-[100vh] bg-gray-50">
       <Sidebar onNavigation={setActiveSection} active={activeSection} />
-      <main className="flex-1">
+      <main className="flex-1 h-[100vh] overflow-scroll bg-gray-50">
         {renderContent()}
       </main>
     </div>
