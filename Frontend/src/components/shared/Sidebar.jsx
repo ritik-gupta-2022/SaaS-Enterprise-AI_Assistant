@@ -67,10 +67,10 @@ export function Sidebar({ onNavigation, active }) {
     };
 
     return (
-        <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} min-h-screen text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
+        <div className={`${isCollapsed ? sizes.collapsed : sizes.expanded} ${isCollapsed ? colors.collapsed : colors.expanded} h-[100vh] text-white p-4 transition-all duration-300 relative border-1 border border-black/20`}>
             <button 
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="absolute -right-3 top-4 bg-[#c0bbe5] text-black rounded-full p-1 hover:bg-bg-[#7E75B8]"
+                className="absolute -right-3 z-50 top-4 bg-[#c0bbe5] text-black rounded-full p-1 hover:bg-bg-[#7E75B8]"
             >
                 {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
             </button>
@@ -105,8 +105,8 @@ export function Sidebar({ onNavigation, active }) {
                         businesses.map((business,index) => (
                             <button
                                 key={index}
-                                onClick={() => onNavigation(business.id)}
-                                className={`flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center text-black' : 'text-black'}`}
+                                onClick={() => onNavigation(business._id)}
+                                className={`flex items-center gap-3 px-2 py-2 w-full rounded-lg ${colors.hover} transition-colors ${isCollapsed ? 'justify-center text-black rounded-full' : 'text-black'}`}
                             >
                                 <span className="w-5 h-5">{business.name[0]}</span>
                                 {!isCollapsed && <span>{business.name}</span>}
