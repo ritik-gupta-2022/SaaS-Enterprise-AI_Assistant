@@ -22,7 +22,7 @@ export function BotTraining() {
         </TabsList>
 
         <TabsContent value="help-desk">
-          <Card className="grid md:grid-cols-2">
+          <Card className="grid md:grid-cols-2 h-[400px]">
             <div className="space-y-6 p-6">
               <div className="space-y-2">
                 <h3 className="font-medium">Question</h3>
@@ -46,7 +46,7 @@ export function BotTraining() {
         </TabsContent>
 
         <TabsContent value="questions">
-          <Card className="p-6">
+          <Card className="p-6 h-[400px]">
             <p className="text-center text-sm text-muted-foreground">No questions available</p>
           </Card>
         </TabsContent>
