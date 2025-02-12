@@ -71,11 +71,16 @@ const Conversation = () => {
           setFilteredCustomers(filtered);
 
           // Check online status for each customer
+          
           customersWithStatus.forEach(customer => {
             socket.emit('checkRoomStatus', customer.roomId, (response) => {
-              setCustomers(prevCustomers => prevCustomers.map(c => 
-                c.roomId === customer.roomId ? { ...c, isOnline: response.isActive } : c
-              ));
+              setCustomers(prev => {
+                const updatedCustomers = prev.map(c =>
+                  c.roomId === customer.roomId ? { ...c, isOnline: response.isActive } : c
+                );
+                setFilteredCustomers(updatedCustomers.filter(c => c.businessId === selectedDomain?._id));
+                return updatedCustomers;
+              });
             });
           });
         })

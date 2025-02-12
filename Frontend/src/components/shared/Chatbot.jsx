@@ -152,7 +152,12 @@ const Chat = ({ businessId }) => {
     });
 
     return () => {
-      socketRef.current.disconnect();
+      if (socketRef.current) {
+        if (socketRef.current.connected) {
+          socketRef.current.disconnect();
+        }
+        socketRef.current = null;
+      }
     };
   }, [businessId]);
 

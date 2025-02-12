@@ -1,4 +1,5 @@
 import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model, getSystemPrompt } from "../constants/constants.js"
+import Business from "../models/business.model.js";
 
 export async function sendGreeting(socket, sessionId, businessId) {
   let session = activeChats.get(sessionId)
@@ -12,13 +13,15 @@ export async function sendGreeting(socket, sessionId, businessId) {
     }
     activeChats.set(sessionId, session)
   }
+  const business = await Business.findById(businessId).populate("chatBot");
+  // console.log(business?.chatBot?.welcomeMessage);
 
   const systemPrompt = await getSystemPrompt(businessId)
   const greetingPrompt = `
 ${systemPrompt}
 
 Instructions:
-- Send a warm welcome message
+
 - Introduce the store and services briefly
 - Ask how you can help them today
 - Remember to ask for email naturally
