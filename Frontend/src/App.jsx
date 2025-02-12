@@ -21,7 +21,9 @@ function App() {
           <Route path='/signin' element={<SignIn/>} />
           <Route path='/signup' element={<SignUp/>} />
 
+
           <Route path='/chatbot' element={<Chatbot businessId={"679f1e3dc87ad6d8a8c01c54"}/>} />
+
 
           <Route path='/appointment/:businessid/:email' element={<Appointment/>} />
 

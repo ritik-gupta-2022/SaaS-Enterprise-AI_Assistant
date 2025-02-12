@@ -9,8 +9,8 @@ export default function Business({businessid}) {
         <NavBar businessid={businessid} />
         <div className="max-w-7x px-4 sm:px-6 lg:px-8 pt-20">
           <div className="space-y-8">
-            <ChatbotSettings businessid={businessid}/>
             <DomainSettings businessid={businessid}/>
+            <ChatbotSettings businessid={businessid}/>
             <BotTraining businessid={businessid}/>
           </div>
         </div>
