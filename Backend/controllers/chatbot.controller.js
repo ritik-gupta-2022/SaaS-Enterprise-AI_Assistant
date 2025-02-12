@@ -2,6 +2,7 @@ import Business from "../models/business.model.js";
 import ChatBot from "../models/chatbot.model.js";
 import FilterQuestions from "../models/filterQuestion.model.js";
 import HelpDesk from "../models/helpDesk.model.js";
+import { errorHandler } from "../utils/error.js";
 
 export const createChatbot = async(userId , businessId) =>{
 
@@ -118,6 +119,28 @@ export const getFilterQuestion = async (req, res, next) => {
          return next(errorHandler(404, "Business not found"));
       }
       res.status(200).json(business.filterQuestions);
+   }
+   catch(err){
+      next(err);
+   }
+}
+
+export const deleteFilterQuestion = async (req, res, next) => {   
+   const FilterQuestionId = req.params.FilterQuestionId;
+   const businessId = req.params.businessId;
+   try {
+      const business = await Business.findById(businessId);
+      if (!business) {
+         return next(errorHandler(404, "Business not found"));
+      }
+      const filterQuestion = await FilterQuestions.findById(FilterQuestionId);
+      if (!filterQuestion) {
+         return next(errorHandler(404, "filterQuestion not found"));
+      }
+      await FilterQuestions.findByIdAndDelete(FilterQuestionId);
+      business.filterQuestions.pull(FilterQuestionId);
+      await business.save();
+      res.status(200).json(filterQuestion);
    }
    catch(err){
       next(err);
