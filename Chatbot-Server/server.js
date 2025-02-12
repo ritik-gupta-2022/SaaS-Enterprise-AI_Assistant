@@ -12,6 +12,9 @@ import handleChat from "./utils/handleChat.js"
 import { activeChats, EVENT_TYPES, MESSAGE_ROLES, model } from "./constants/constants.js"
 import { sendGreeting } from "./utils/sendGreeting.js"
 import Business from "./models/business.model.js" // Added import
+import FilterQuestions from "./models/filterQuestion.model.js" // Added import
+
+import ChatBot from "./models/chatbot.model.js" // Added import
 
 dotenv.config()
 
@@ -40,7 +43,7 @@ io.on("connection", (socket) => {
   const sessionId = socket.id
   const businessId = socket.handshake.query.businessId || null; // Or however you prefer to retrieve it
 
-  console.log("New connection:", sessionId)
+  // console.log("New connection:", sessionId)
 
   const roomId = `${sessionId}`
 
@@ -69,6 +72,7 @@ io.on("connection", (socket) => {
 
   socket.on("checkRoomStatus", (roomId, callback) => {
     const isActive = io.sockets.adapter.rooms.has(roomId)
+    console.log("Room status:", io.sockets.adapter.rooms.has(roomId), roomId)
     callback({ isActive })
   })
 
@@ -103,7 +107,7 @@ io.on("connection", (socket) => {
 
       io.to(roomId).emit(eventType, {
         message: cleanMessage,
-        link: eventType === EVENT_TYPES.APPOINTMENT ? appointmentUrl : null,
+        // link: eventType === EVENT_TYPES.APPOINTMENT ? appointmentUrl : null,
         sessionInfo: {
           ...response.sessionInfo,
           tags,
@@ -240,6 +244,7 @@ async function handleRepresentativeMessage(roomId, message) {
     )
   }
 }
+
 
 const PORT = process.env.PORT || 5000
 server.listen(PORT, () => {
